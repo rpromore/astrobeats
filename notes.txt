@@ -1,0 +1,3 @@
+remove "site" links from menu, move to header
+add breadcrumb below header with white gradient background, width is auto, not 100%
+explore music: fetch from soundcloud, reddit/r/listentothis, reddit/r/music
