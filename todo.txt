@@ -1,0 +1,67 @@
+todo:
+
+quick note: 2 views: modal and (thumb or list)
+	modal: for more specific item viewing, usually for one item
+	(thumb or list): more general
+
+caching:
+	-fetch in display.php
+	-for each service used:
+		-if site not in cache, add it
+		-if older then cache limit, set it
+	-consider saving images temporarily for faster loading times
+		-if image exists, do not save again
+		-image can be accessed like so: display.php?image=[url]
+		-images will be saved as [url]
+list view
+playing music
+lazy load
+applying filters
+searching
+
+scrolling anywhere scrolls #loadhere
+change "views" to "view options"
+thumbnail resizing:
+	-store largest image available
+	-scale image according to slider in views
+
+concerts
+modal dialog (see chrome web store)
+	- drop shadow
+	- each tab has 2px underline
+	- jquery lava lamp effect
+	- when clicking tab item, main content pane "slides"
+	
+	- wall view:
+		<b>song name</b> || <b>artist name</b>
+		artist name	 	 || genre
+						 || short artist info
+	- list view
+		-variable column list view
+			-min 1, max 3 columns
+			
+	- search
+		-below search field, add select for more specific searching.
+	
+	- explore music
+		-add play/stop icon to center of thumb
+		-streaming
+			-play bar will go at top of #loadhere
+			-milkdrop when video not available (maybe)
+			-automatically load next set of songs (see wearehunted)
+		-use echonest to find similar songs (maybe)
+	- artists:
+		-info
+		-videos
+		-images
+		-songs
+		-downloads
+		-use echonest to find similar artists
+	- concerts
+		-venue info
+		-ticket info
+		-map info
+		-add to calendar
+	- playlists
+		-lastfm playlists/radios
+		-track8 playlists
