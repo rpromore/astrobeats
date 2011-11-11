@@ -2,11 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 	<meta name="author" content="Robert Romore" />
-    <link href='http://fonts.googleapis.com/css?family=Arimo:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css' />
-    <link href='http://fonts.googleapis.com/css?family=Chivo:400,900' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Spinnaker' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Chivo' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Sansita+One' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="jquery.ui/css/Aristo/Aristo.css" />
     <link rel="stylesheet" type="text/css" href="elements.css" />
@@ -14,16 +12,17 @@
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="jquery.ui/js/ui.js"></script>
     <script type="text/javascript" src="jquery.address.js?state=#!"></script>
+    <script type="text/javascript" src="jquery.imagesloaded.js"></script>
     <script type="text/javascript" src="masonry.js"></script>
     <script type="text/javascript" src="notes.js"></script>
-	<title>Concrrt</title>
+	<title>AstroBeats</title>
 </head>
 <body>
 
 <div id="header">
 	<div class="container">
 		<div id="title">
-			Concrrt
+			AstroBeats
 		</div>
 		<ul id="places">
 			<li id="explore" class="active"><a href="explore">Explore Music</a></li>
@@ -36,7 +35,8 @@
 			<li id="options"><a href="options">Options</a></li>
 			-->
 		</ul>
-		<div id="search">
+		<div id="musicpanel">
+			<button id="play"></button>
 		</div>
 	</div>
 </div>
@@ -48,20 +48,23 @@
 					<input type="text" id="search" name="search" class="pill white" />
 				<label for="filter">Filters</label>
 					<div id="filters">
-						<button class="pill" id="resources">Resources</button>
+						<button class="" id="resources">Resources</button>
 						<div class="popup">
 							<span><input type="checkbox" /> Reddit</span>
 							<span><input type="checkbox" /> SoundCloud</span>
 							<span><input type="checkbox" /> GrooveShark</span>
 						</div>
-						<button class="pill" id="genres">Genres</button>
+						<button class="" id="genres">Genres</button>
 					</div>
 				<label for="views">Views</label>
 			</div>
 		</div>
 		<div id="content-right">
 			<div style="position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; overflow: auto; padding: 10px 0 0 10px;">
-				<div id="title"></div>
+				<div id="loading">
+					<div class="ball"></div>
+					<div class="ball1"></div>
+				</div>
 				<div id="loadhere" style="margin: 0 auto;">
 					
 				</div>

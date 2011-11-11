@@ -65,9 +65,7 @@ html, body {
 body {
     background: #F3F3F2 url(soft_wallpaper.png);
     font-size: 100%;
-    font-family: sans-serif;
-    font-family: "Lucida Grande", Verdana, Tahoma, Arial, sans-serif;
-    font-family: 'Arimo', arial, serif;
+    font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
 }
 div.container {
     margin: 0px auto;
@@ -175,7 +173,7 @@ div#header ul#places > li.active, div#header ul#places > li.active:hover {
 div#header ul#places > li > a {
     color: inherit;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 500;
 }
 div#header ul#places > li > a > img {
     vertical-align: middle;
@@ -273,6 +271,9 @@ div#loading {
 	text-shadow: 1px 1px 1px #FFF;
 }
 
+#loading {
+	display: none;
+}
 .ball {
 	background-color: rgba(0,0,0,0);
 	border:5px solid rgba(0,153,259,0.9);
@@ -352,14 +353,51 @@ div#loading {
 }
 
 div.item {
-	float: left;
 	box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-	margin: 4px;
+	margin: 2px;
+	position: relative;
+	background: rgba(0, 0, 0, .2);
+	cursor: pointer;
+	float: left;
+	overflow: hidden;
+	width: 182px;
+	height: 182px;
+	line-height: 20px !important;
 }
-div.item, div.item > img, div.item div.overlay {
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+div.item h2 {
+	font-size: 18px;
+	font-family: "Chivo", Arial, Verdana, sans-serif;
+}
+.item > .thumb {
+	width: 182px;
+	height: 182px;
+	float: left;
+}
+.item > .thumb > img {
+	width: 182px;
+	height: 182px;
+}
+.item > .desc {
+	float: left;
+	overflow: hidden;
+	background: rgba(255, 255, 255, .85);
+	position: absolute;
+	left: 187px;
+	width: 182px;
+	height: 182px;
+}
+.item > .desc2 {
+	left: 0px;
+}
+/*
+div.no-overlay {
+	width: 182px;
+	height: 182px;
+	overflow: hidden;
+	color: rgba(0, 0, 0, .7);
+}
+div.no-overlay > h2 {
+	margin: 5px;
 }
 div.item div.overlay {
 	position: absolute;
@@ -368,7 +406,13 @@ div.item div.overlay {
 	height: 100%;
 	background-color: rgba(0, 0, 0, .7);
 	display: none;
+}
+div.item div.overlay > h2 {
 	cursor: pointer;
+}
+div.overlaid > img {
+	width: 182px;
+	height: 182px;
 }
 div.item div.overlay > h2 {
 	color: #FFF;
@@ -378,7 +422,7 @@ div.item div.overlay > h2 {
 	cursor: default;
 	text-shadow: 1px 1px 1px #000;
 }
-
+*/
 div#filters {
 	margin: 1em;
 }
@@ -388,6 +432,7 @@ div#filters button {
 	margin-bottom: .4em;
 }
 div#filters div.popup {
+	width: 85%;
 	margin: 0 auto;
 	margin-top: -.4em;
 	padding: 10px 2px 2px 2px;
@@ -396,6 +441,8 @@ div#filters div.popup {
 	position: absolute;
 	z-index: 3;
 	display: none;
+	border-bottom-left-radius: .5em;
+	border-bottom-right-radius: .5em;
 }
 div#filters div.popup > span {
 	display: block;
