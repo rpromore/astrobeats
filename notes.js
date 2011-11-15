@@ -8,11 +8,11 @@ Array.prototype.shuffle = function() {
 $(document).ready(function(){	
 	$(document).scroll(function(){ console.log("scrolling"); });
 	
-	if( $.address.value() == '/concrrt/' )
+	if( $.address.value() == '/astrobeats/' )
 		$.address.value("explore");
 	$.address.change(function(event) {
-		console.log(event.value.replace("/concrrt/#", ""));
-		display(event.value.replace("/concrrt/#", ""));
+		console.log(event.value.replace("/astrobeats/#", ""));
+		display(event.value.replace("/astrobeats/#", ""));
 	});
 	$.address.history(true);
 	

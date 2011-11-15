@@ -6,6 +6,7 @@
 	<meta name="author" content="Robert Romore" />
 	<link href='http://fonts.googleapis.com/css?family=Chivo' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Sansita+One' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Istok+Web:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="jquery.ui/css/Aristo/Aristo.css" />
     <link rel="stylesheet" type="text/css" href="elements.css" />
     <link rel="stylesheet" type="text/css" href="style.css" />
@@ -36,7 +37,18 @@
 			-->
 		</ul>
 		<div id="musicpanel">
+			<button id="prev"></button>
 			<button id="play"></button>
+			<button id="pause" style="display: none;"></button>
+			<button id="next"></button>
+			<div id="seekbar" class="bar"></div>
+			<button id="heart"></button>
+			<button id="download"></button>
+			<button id="volumeon"></button>
+			<button id="volumeoff" style="display: none;"></button>
+			<div id="volumebar" class="bar">
+				<div class="bar" style="width: 50%;"></div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -56,7 +68,16 @@
 						</div>
 						<button class="" id="genres">Genres</button>
 					</div>
-				<label for="views">Views</label>
+				<label for="views">View Options</label>
+					<div id="viewoptions">
+						<p>Display Style</p>
+						<div id="display-style" style="text-align: center">
+							<input type="radio" id="displaystyle-wall" name="displaystyle" checked /><label for="displaystyle-wall">Wall</label>
+							<input type="radio" id="displaystyle-list" name="displaystyle" /><label for="displaystyle-list">List</label>
+						</div>
+						<p>Thumbnail Size</p>
+						<div id="thumbnail-size"></div>
+					</div>
 			</div>
 		</div>
 		<div id="content-right">
@@ -65,7 +86,7 @@
 					<div class="ball"></div>
 					<div class="ball1"></div>
 				</div>
-				<div id="loadhere" style="margin: 0 auto;">
+				<div id="loadhere" class="wall" style="margin: 0 auto;">
 					
 				</div>
 			</div>
