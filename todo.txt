@@ -65,3 +65,6 @@ modal dialog (see chrome web store)
 	- playlists
 		-lastfm playlists/radios
 		-track8 playlists
+		
+		
+give animation to seek bar when loading song to indicate loading.

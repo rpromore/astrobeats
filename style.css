@@ -96,6 +96,12 @@ div#header {
     box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, .2);
     white-space: nowrap; 
 }
+div#header::selection, div#header *::selection, div#content-left::selection, div#content-left *::selection {
+        background: transparent; /* Safari */
+        }
+div#header::-moz-selection, div#header *::-moz-selection, div#content-left::-moz-selection, div#content-left *::-moz-selection {
+        background: transparent; /* Firefox */
+}
 div#header div#title {
     width: 200px;
     height: 100%;
@@ -196,6 +202,43 @@ div#header div#search select {
 	color: #555;
 }
 
+div#header div#musicpanel {
+	float: right;
+	line-height: 35px;
+	position: relative;
+}
+div#header div#musicpanel button {
+	background: none;
+	border: none;
+}
+div#header div#musicpanel button:hover {
+	box-shadow: none;
+}
+div#header div#musicpanel .ui-state-default {
+	box-shadow: none;
+}
+div#header div#musicpanel div.bar {
+	width: 100px;
+	height: 9px;
+	background: red;
+	display: inline-block;
+	position: relative;
+	top: 1px;
+	background: rgba(0, 0, 0, .2);
+}
+div#header div#musicpanel div.bar > div.bar {
+	height: 8px;
+	background: #0099cc;
+}
+div#header div#musicpanel .ui-slider {
+	z-index: 101;
+}
+/*
+div#header div#musicpanel button .ui-button-icon-primary {
+	margin: 0 auto;
+}
+*/
+
 div#content {
     position: absolute;
     top: 35px; left: 0px; right: 0px; bottom: 0px;
@@ -236,6 +279,14 @@ div#content-left div#search > input[type=text] {
     -moz-transition: all 0.25s ease-in-out;
     background: rgba(255, 255, 255, .85);
 }
+div#content-left div#search div#thumbnail-size {
+	width: 90%;
+	margin: 0px auto;
+}
+div#content-left div#search p {
+	display: block;
+	margin: 10px;
+}
 div#content div#content-right {
     position: absolute;
     top: 0px; left: 200px; right: 0px; bottom: 0px;
@@ -254,10 +305,6 @@ div#content-right div#title:first-letter {
 }
 div#searchresults {
 	display: block;
-}
-h2 {
-	display: block;
-	font-size: 18px;
 }
 
 div#loading {
@@ -352,21 +399,35 @@ div#loading {
 	background-color: rgba(0, 0, 0, .2);
 }
 
-div.item {
-	box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-	margin: 2px;
-	position: relative;
-	background: rgba(0, 0, 0, .2);
-	cursor: pointer;
-	float: left;
-	overflow: hidden;
+div.list div.item {
+	width: 100%;
+	height: 182px;
+	margin: 5px 0px;
+}
+div.wall div.item {
 	width: 182px;
 	height: 182px;
+	margin: 2px;
+	cursor: pointer;
+	background: rgba(0, 0, 0, .2);
+}
+div.item {
+	box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+	position: relative;
+	float: left;
+	overflow: hidden;
 	line-height: 20px !important;
+	font-family: "Istok Web", Arial, Verdana, sans-serif;
+}
+div.item a {
+	color: #555;
+	font-weight: bold;
+	font-size: 14px;
 }
 div.item h2 {
-	font-size: 18px;
-	font-family: "Chivo", Arial, Verdana, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	margin: 3px;
 }
 .item > .thumb {
 	width: 182px;
@@ -380,11 +441,13 @@ div.item h2 {
 .item > .desc {
 	float: left;
 	overflow: hidden;
-	background: rgba(255, 255, 255, .85);
-	position: absolute;
-	left: 187px;
+}
+.wall > .item > .desc {
 	width: 182px;
 	height: 182px;
+	background: rgba(255, 255, 255, .95);
+	position: absolute;
+	left: 187px;
 }
 .item > .desc2 {
 	left: 0px;
@@ -448,4 +511,14 @@ div#filters div.popup > span {
 	display: block;
 	margin-bottom: 5px;
 	color: #444;
+}
+
+.ui-button .ui-icon.ui-display-wall {
+	background: url(list_wall.png);
+}
+.ui-button .ui-icon.ui-display-list {
+	background: url(list_bullets.png);
+}
+.ui-button-text {
+	margin: 2px 0 2px 5px;
 }
