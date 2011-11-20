@@ -13,8 +13,9 @@ caching:
 		-if image exists, do not save again
 		-image can be accessed like so: display.php?image=[url]
 		-images will be saved as [url]
+		
 list view
-playing music
+playing music, volume control ✔
 lazy load
 applying filters
 searching
