@@ -84,7 +84,7 @@ $(document).ready(function(){
 			primary: "ui-icon-arrowthickstop-1-s"
 		}
 	});
-	var lastVolume = 100;
+	var lastVolume = 50;
 	$("button#volumeon").button({
 		text: false,
 		icons: {
@@ -93,8 +93,10 @@ $(document).ready(function(){
 	}).click(function(){
 		$(this).hide();
 		$("button#volumeoff").show();
-		lastVolume = $("#volumebar").children(".bar").css("width").replace("px", "");
-		$("#volumebar").children(".bar").css("width", "0px");
+		// lastVolume = $("#volumebar").children(".bar").css("width").replace("px", "");
+		lastVolume = $("#volumebar").slider("value");
+		// $("#volumebar").children(".bar").css("width", "0px");
+		$("#volumebar").slider("value", 0);
 	});
 	$("button#volumeoff").button({
 		text: false,
@@ -104,7 +106,8 @@ $(document).ready(function(){
 	}).click(function(){
 		$(this).hide();
 		$("button#volumeon").show();
-		$("#volumebar").children(".bar").css("width", lastVolume);
+		// $("#volumebar").children(".bar").css("width", lastVolume);
+		$("#volumebar").slider("value", lastVolume);
 	});
 	$("#thumbnail-size").slider({
 		min: 126,
@@ -135,6 +138,7 @@ $(document).ready(function(){
 		$("#loadhere").show();
 	});
 	
+	/*
 	$("#volumebar").mousedown(function(e){
 		$(this).mousemove(function(e){
 			$(this).children(".bar").css("width", e.offsetX);
@@ -144,6 +148,34 @@ $(document).ready(function(){
 	$("#volumebar").mouseup(function(){
 		$(this).unbind("mousemove");
 	});
+	*/
+	
+	$("#volumebar").slider({
+		min: 0,
+		max: 100,
+		change: function(){
+			v = $(this).slider("value");
+			if( v == 0 ) {
+				$("button#volumeon").hide();
+				$("button#volumeoff").show();
+			}
+			else {
+				$("button#volumeon").show();
+				$("button#volumeoff").hide();
+			}
+		},
+		slide: function(){
+			v = $(this).slider("value");
+			if( v == 0 ) {
+				$("button#volumeon").hide();
+				$("button#volumeoff").show();
+			}
+			else {
+				$("button#volumeon").show();
+				$("button#volumeoff").hide();
+			}
+		}
+	}).slider("value", 50);
 	
 	function display(page) {
 		$container = $("#loadhere");
@@ -152,10 +184,13 @@ $(document).ready(function(){
 				$.getJSON("lib/display.php", function(data){
 					var items = [];
 					$.each(data, function(k, v) {
+						/*
 						image = v["image"] ? '<div class="thumb"><img src="'+v["image"]+'" /></div>' : "";
 						desc = image == "" ? "desc2" : "desc";
 						artist = v["artist"] == "" || v["artist"] == "undefined" ? "" : 'by <a href="">'+v["artist"]+'</a>';
 						item = '<div class="item">'+image+'<div class="'+desc+'"><h2>'+v["name"]+'</h2>'+artist+'</div></div>';
+						*/
+						item = '<div class="item">'+v["output"]+'</div>';
 						items.push(item);
 					});
 					items.shuffle();
@@ -177,4 +212,8 @@ $(document).ready(function(){
 				});	
 		}
 	}
+	
+	$("#modal > #close").live("click", function(){
+		$("#modal-cover, #modal").hide().remove();
+	});
 });

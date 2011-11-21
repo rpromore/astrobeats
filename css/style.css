@@ -235,6 +235,8 @@ div#header div#musicpanel div.bar > div.bar {
 }
 div#header div#musicpanel .ui-slider {
 	z-index: 101;
+	display: inline-block;
+	min-width: 100px;
 }
 /*
 div#header div#musicpanel button .ui-button-icon-primary {
@@ -321,6 +323,7 @@ div#loading {
 	color: #999;
 	color: rgba(0, 0, 0, .5);
 	text-shadow: 1px 1px 1px #FFF;
+	width: 100%;
 }
 
 #loading {
@@ -464,4 +467,33 @@ div#filters div.popup > span {
 }
 .ui-button-text {
 	margin: 2px 0 2px 5px;
+}
+
+#modal-cover {
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	background: rgba(255, 255, 255, .6);
+	z-index: 999;
+}
+#modal {
+	position: absolute;
+	top: 40px;
+	left: 200px;
+	right: 200px;
+	bottom: 40px;
+	z-index: 1000;
+	background: #FFF;
+	border: 1px rgba(0, 0, 0, .3) solid;
+	box-shadow: 0 0 15px rgba(0, 0, 0, .3);
+}
+#modal > #close {
+	position: absolute;
+	top: 0; right: 0;
+	width: 16px;
+	height: 16px;
+	line-height: 20px;
+	font-size: 12px;
+	font-family: verdana, sans-serif;
+	cursor: pointer;
+	color: #555;
 }

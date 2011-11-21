@@ -43,9 +43,12 @@
 			<button id="download"></button>
 			<button id="volumeon"></button>
 			<button id="volumeoff" style="display: none;"></button>
+			<div id="volumebar"></div>
+			<!--
 			<div id="volumebar" class="bar">
 				<div class="bar" style="width: 50%;"></div>
 			</div>
+			-->
 		</div>
 	</div>
 </div>
@@ -79,16 +82,21 @@
 			</div>
 		</div>
 		<div id="content-right">
-				<div id="loading">
-					<div class="ball"></div>
-					<div class="ball1"></div>
-				</div>
-				<div id="loadhere" class="wall" style="margin: 0 auto; text-align: center;">
-					
-				</div>
+			<div id="loading">
+				<div class="ball"></div>
+				<div class="ball1"></div>
+			</div>
+			<div id="loadhere" class="wall" style="margin: 0 auto; text-align: center;">
+				
+			</div>
 		</div>
 	</div>
 </div>
-
+<!--
+<div id="modal-cover"></div>
+<div id="modal">
+	<div id="close">x</div>
+</div>
+-->
 </body>
 </html>

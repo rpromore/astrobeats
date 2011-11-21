@@ -1,5 +1,7 @@
 <?php				
 
+error_reporting(E_ALL ^ E_NOTICE);
+
 function lastfm() {
 	$items = array();
 	$cacheFile = "cache/lastfm.json";
@@ -12,8 +14,25 @@ function lastfm() {
 		fwrite($f, $lastfm);
 		$lastfm = json_decode($lastfm);
 	}
-	foreach( $lastfm->tracks->track AS $i )
-		$items[] = array("name" => $i->name, "image" => !empty($i->image) ? $i->image[3]->{'#text'} : "", "from" => "lastfm", "artist" => $i->artist->name);
+	foreach( $lastfm->tracks->track AS $i ) {
+		$title = $i->name;
+		$artist = $i->artist->name;
+		if( $i->image == null ) {
+			// search lastfm to see if they have it
+			$images = json_decode(file_get_contents("http://ws.audioscrobbler.com/2.0/?method=artist.getimages&format=json&artist=" . urlencode($artist) . "&limit=1&autocorrect=1&api_key=b25b959554ed76058ac220b7b2e0a026"));
+			if( $images->image )
+				$image = $images->image->sizes->size[5]->{"#text"};
+			else
+				$image = "";
+		}
+		else
+			$image = $i->image[3]->{"#text"};
+		$html = $image ? '<div class="thumb"><img src="' . $image . '" /></div>' : '';
+		$html .= $image ? '<div class="desc">' : '<div class="desc2">';
+		$html .= '<h2>' . $title . '</h2>by ' . $artist;
+		$html .= '</div>';
+		$items[] = array("title" => $title, "image" => $image, "from" => "lastfm", "artist" => $artist, "output" => $html);
+	}
 	return $items;
 }
 function reddit() {
@@ -51,9 +70,9 @@ function soundcloud() {
 
 $items = array();
 
-// $items = array_merge($items, lastfm());
-$items = array_merge($items, reddit());
-$items = array_merge($items, soundcloud());
+$items = array_merge($items, lastfm());
+// $items = array_merge($items, reddit());
+// $items = array_merge($items, soundcloud());
 
 header('Content-type: application/json');
 echo json_encode($items);
