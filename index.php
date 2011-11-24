@@ -28,12 +28,12 @@
 			AstroBeats
 		</div>
 		<ul id="places">
-			<li id="explore" class="active"><a href="#!/explore">Explore Music</a></li>
-			<li id="artists"><a href="#!/artists">Artists</a></li>
-			<li id="albums"><a href="#!/albums">Albums</a></li>
-			<li id="artists"><a href="#!/artists">Events</a></li>
-			<li id="playlists"><a href="#!/playlists">Playlists</a></li>
-			<li id="options"><a href="#!/options">Options</a></li>
+			<li id="explore" class="active"><a href="explore">Explore Music</a></li>
+			<li id="artists"><a href="artists">Artists</a></li>
+			<li id="albums"><a href="albums">Albums</a></li>
+			<li id="artists"><a href="artists">Events</a></li>
+			<li id="playlists"><a href="playlists">Playlists</a></li>
+			<li id="options"><a href="options">Options</a></li>
 		</ul>
 		<div id="musicpanel">
 			<button id="prev"></button>

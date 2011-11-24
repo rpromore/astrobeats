@@ -12,6 +12,15 @@ $(document).ready(function(){
 	});
 	$.address.history(true);
 	
+	$("ul#places > li").click(function(){
+		$(this).addClass("active").siblings("li").removeClass("active");
+		$.address.value($(this).find("a").attr("href"));
+	}).find("a").click(function(){
+		$(this).parent("li").addClass("active").siblings("li").removeClass("active");
+		$.address.value($(this).attr("href"));
+		return false;
+	});
+	
 	var lastItemWidth = 182;
 	var lastVideo = "";
 	
@@ -223,6 +232,9 @@ $(document).ready(function(){
 	function display(page) {
 		$container = $("#loadhere");
 		switch(page) {
+			case "/artists":
+				$("#loadhere").html("artists");
+				break;
 			case "/explore":
 				$.getJSON("lib/services.php", function(data){
 					var items = [];
@@ -240,7 +252,6 @@ $(document).ready(function(){
 							.live({
 								click: function(){
 									if( $(this).attr("data-provider") == "youtube.com" ) {
-										// swfobject.embedSWF($(this).attr("data-url")+"?enablejsapi=1&playerapiid=ytplayer&version=3", "player", "425", "356", "8", null, null, params, attributes);
 										$("#player").tubeplayer("play", $(this).attr("data-url"));
 										lastVideo = $(this).attr("data-url");
 									}
@@ -270,11 +281,4 @@ $(document).ready(function(){
 	$("#modal > #close").live("click", function(){
 		$("#modal-cover, #modal").hide().remove();
 	});
-	
-	// console.log($.address.hash());
 });
-
-function onYouTubePlayerReady(playerId){
-	alert("ready");
-	consle.log("ready");
-}
