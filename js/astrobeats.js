@@ -7,6 +7,10 @@ Array.prototype.shuffle = function() {
 $(document).ready(function(){
 	if( $.address.value() == '/astrobeats/' )
 		$.address.value("explore");
+	else {
+		var addr = $.address.value().replace("/astrobeats/#/", "");
+		$("#"+addr).addClass("active").siblings("li").removeClass("active");
+	}
 	$.address.change(function(event) {
 		display(event.value.replace("/astrobeats/#", ""));
 	});
