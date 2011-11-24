@@ -4,8 +4,7 @@ Array.prototype.shuffle = function() {
 	while (s.length) this.push(s.pop());
 	return this;
 }
-
-$(document).ready(function(){	
+$(document).ready(function(){
 	if( $.address.value() == '/astrobeats/' )
 		$.address.value("explore");
 	$.address.change(function(event) {
@@ -14,6 +13,37 @@ $(document).ready(function(){
 	$.address.history(true);
 	
 	var lastItemWidth = 182;
+	var lastVideo = "";
+	
+	$("#player").tubeplayer({
+		width: 10, // the width of the player
+		height: 10, // the height of the player
+		allowFullScreen: "false", // true by default, allow user to go full screen
+		initialVideo: "", // the video that is loaded into the player
+		preferredQuality: "small",// preferred quality: default, small, medium, large, hd720
+		showinfo: false,
+		iframed: true,
+		onPlay: function(id){
+			$("button#play").hide();
+			$("button#pause").show();
+			setInterval(function(){
+				var data = $("#player").tubeplayer("data");
+				$("#seek-loading").width(((data.bytesLoaded)/(data.bytesTotal))*100);
+				$("#seek-loaded").width(((data.currentTime)/(data.duration))*100);
+				
+				if( data.currentTime == data.duration ) {}
+					// go to next song if option enabled
+			}, 1000);
+		}, // after the play method is called
+		onPause: function(){
+			$("button#pause").hide();
+			$("button#play").show();
+		}, // after the pause method is called
+		onStop: function(){}, // after the player is stopped
+		onSeek: function(time){}, // after the video has been seeked to a defined point
+		onMute: function(){}, // after the player is muted
+		onUnMute: function(){} // after the player is unmuted
+	});
 	
 	$("#displaystyle-wall").button({
 		text: "Wall",
@@ -35,6 +65,11 @@ $(document).ready(function(){
 	});
 	$("#display-style").buttonset();
 	
+	$("#seekbar").click(function(e){
+		var data = $("#player").tubeplayer("data");
+		$("#player").tubeplayer("seek", e.offsetX*(data.duration/100));
+	});
+	
 	$("button#resources, button#genres").button({
 		icons: {
 			secondary: "ui-icon-triangle-1-s"
@@ -50,6 +85,7 @@ $(document).ready(function(){
 	}).click(function(){
 		$(this).hide();
 		$("button#pause").show();
+		$("#player").tubeplayer("play");
 	});
 	$("button#pause").button({
 		text: false,
@@ -59,6 +95,7 @@ $(document).ready(function(){
 	}).click(function(){
 		$(this).hide();
 		$("button#play").show();
+		$("#player").tubeplayer("pause");
 	});
 	$("button#prev").button({
 		text: false,
@@ -97,6 +134,7 @@ $(document).ready(function(){
 		lastVolume = $("#volumebar").slider("value");
 		// $("#volumebar").children(".bar").css("width", "0px");
 		$("#volumebar").slider("value", 0);
+		$("#player").tubeplayer("mute");
 	});
 	$("button#volumeoff").button({
 		text: false,
@@ -108,6 +146,7 @@ $(document).ready(function(){
 		$("button#volumeon").show();
 		// $("#volumebar").children(".bar").css("width", lastVolume);
 		$("#volumebar").slider("value", lastVolume);
+		$("#player").tubeplayer("unmute");
 	});
 	$("#thumbnail-size").slider({
 		min: 126,
@@ -138,18 +177,6 @@ $(document).ready(function(){
 		$("#loadhere").show();
 	});
 	
-	/*
-	$("#volumebar").mousedown(function(e){
-		$(this).mousemove(function(e){
-			$(this).children(".bar").css("width", e.offsetX);
-		});
-		$(this).children(".bar").css("width", e.offsetX);
-	});
-	$("#volumebar").mouseup(function(){
-		$(this).unbind("mousemove");
-	});
-	*/
-	
 	$("#volumebar").slider({
 		min: 0,
 		max: 100,
@@ -163,6 +190,7 @@ $(document).ready(function(){
 				$("button#volumeon").show();
 				$("button#volumeoff").hide();
 			}
+			$("#player").tubeplayer("volume", v);
 		},
 		slide: function(){
 			v = $(this).slider("value");
@@ -174,30 +202,52 @@ $(document).ready(function(){
 				$("button#volumeon").show();
 				$("button#volumeoff").hide();
 			}
+			$("#player").tubeplayer("volume", v);
 		}
-	}).slider("value", 50);
+	}).slider("value", 100);
+	
+	var flashvars = {
+		enable_api: true, 
+		object_id: "player",
+		url: "",
+		enablejsapi: '1'
+	};
+	var params = {
+		allowscriptaccess: "always"
+	};
+	var attributes = {
+		id: "myytplayer",
+		name: "myytplayer"
+	};
 	
 	function display(page) {
 		$container = $("#loadhere");
 		switch(page) {
 			case "/explore":
-				$.getJSON("lib/display.php", function(data){
+				$.getJSON("lib/services.php", function(data){
 					var items = [];
 					$.each(data, function(k, v) {
-						/*
-						image = v["image"] ? '<div class="thumb"><img src="'+v["image"]+'" /></div>' : "";
-						desc = image == "" ? "desc2" : "desc";
-						artist = v["artist"] == "" || v["artist"] == "undefined" ? "" : 'by <a href="">'+v["artist"]+'</a>';
-						item = '<div class="item">'+image+'<div class="'+desc+'"><h2>'+v["name"]+'</h2>'+artist+'</div></div>';
-						*/
-						item = '<div class="item">'+v["output"]+'</div>';
+						item = '<div class="item" data-provider="'+ v["provider"] +'" data-url="'+ v["url"] +'">'+v["output"]+'</div>';
 						items.push(item);
 					});
 					items.shuffle();
-					$items = $(items.join('')).css("opacity", "0");
-					$items.imagesLoaded(function(){
+					// $items = $(items.join('')).css("opacity", "0");
+					$items = $(items.join(''));
+					// $items.imagesLoaded(function(){
 						$("#loadhere")
 							.html($items)
+							.find(".item")
+							.live({
+								click: function(){
+									if( $(this).attr("data-provider") == "youtube.com" ) {
+										// swfobject.embedSWF($(this).attr("data-url")+"?enablejsapi=1&playerapiid=ytplayer&version=3", "player", "425", "356", "8", null, null, params, attributes);
+										$("#player").tubeplayer("play", $(this).attr("data-url"));
+										lastVideo = $(this).attr("data-url");
+									}
+									else
+										console.log("Unable to load provider. Provider: "+$(this).attr("data-provider"));
+								}
+							})
 						;
 						$("#loadhere.wall")
 							.find(".item")
@@ -207,7 +257,11 @@ $(document).ready(function(){
 									mouseleave: function(){ $(this).children(".desc").stop().animate({ left: "187px" }, {duration: 700, easing: "easeOutBounce"}); }
 								}
 							);
-						$items.animate({ opacity: 1 }, 1000);
+						// $items.animate({ opacity: 1 }, 1000);
+					// });
+					
+					$("img.lazy").lazyload({
+						container: $("#loadhere")
 					});
 				});	
 		}
@@ -216,4 +270,11 @@ $(document).ready(function(){
 	$("#modal > #close").live("click", function(){
 		$("#modal-cover, #modal").hide().remove();
 	});
+	
+	// console.log($.address.hash());
 });
+
+function onYouTubePlayerReady(playerId){
+	alert("ready");
+	consle.log("ready");
+}

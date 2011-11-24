@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
@@ -12,9 +12,11 @@
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/jqueryui.js"></script>
+    <script type="text/javascript" src="js/jquery.tubeplayer.js"></script>
+    <script type="text/javascript" src="js/soundcloud.player.api.js"></script>
     <script type="text/javascript" src="js/jquery.address.js?state=#!"></script>
     <script type="text/javascript" src="js/jquery.imagesloaded.js"></script>
-    <script type="text/javascript" src="js/masonry.js"></script>
+    <script type="text/javascript" src="js/jquery.lazyload.js"></script>
     <script type="text/javascript" src="js/astrobeats.js"></script>
 	<title>AstroBeats</title>
 </head>
@@ -26,29 +28,27 @@
 			AstroBeats
 		</div>
 		<ul id="places">
-			<li id="explore" class="active"><a href="explore">Explore Music</a></li>
-			<li id="artists"><a href="artists">Artists</a></li>
-			<li id="albums"><a href="albums">Albums</a></li>
-			<li id="artists"><a href="artists">Events</a></li>
-			<li id="playlists"><a href="playlists">Playlists</a></li>
-			<li id="options"><a href="options">Options</a></li>
+			<li id="explore" class="active"><a href="#!/explore">Explore Music</a></li>
+			<li id="artists"><a href="#!/artists">Artists</a></li>
+			<li id="albums"><a href="#!/albums">Albums</a></li>
+			<li id="artists"><a href="#!/artists">Events</a></li>
+			<li id="playlists"><a href="#!/playlists">Playlists</a></li>
+			<li id="options"><a href="#!/options">Options</a></li>
 		</ul>
 		<div id="musicpanel">
 			<button id="prev"></button>
 			<button id="play"></button>
 			<button id="pause" style="display: none;"></button>
 			<button id="next"></button>
-			<div id="seekbar" class="bar"></div>
+			<div id="seekbar" class="bar">
+				<div class="bar" id="seek-loaded"></div>
+				<div class="bar" id="seek-loading"></div>
+			</div>
 			<button id="heart"></button>
 			<button id="download"></button>
 			<button id="volumeon"></button>
 			<button id="volumeoff" style="display: none;"></button>
 			<div id="volumebar"></div>
-			<!--
-			<div id="volumebar" class="bar">
-				<div class="bar" style="width: 50%;"></div>
-			</div>
-			-->
 		</div>
 	</div>
 </div>
@@ -92,11 +92,15 @@
 		</div>
 	</div>
 </div>
+
 <!--
 <div id="modal-cover"></div>
 <div id="modal">
 	<div id="close">x</div>
 </div>
 -->
+
+<div id="player" style="position: absolute; left: -1000px; top: -1000px; z-index: -1000;"><br /><br />player</div>
+
 </body>
 </html>

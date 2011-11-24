@@ -63,7 +63,7 @@ html, body {
     padding: 0px;
 }
 body {
-    background: #F3F3F2 url(../img/soft_wallpaper.png);
+    background: #F3F3F2 url(../img/soft_wallpaper.png) fixed;
     font-size: 100%;
     font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
 }
@@ -231,7 +231,17 @@ div#header div#musicpanel div.bar {
 }
 div#header div#musicpanel div.bar > div.bar {
 	height: 8px;
+	position: absolute;
+}
+div#header div#musicpanel div.bar > div.bar#seek-loading {
+	background: rgba(0, 0, 0, .1);
+	z-index: 5;
+	width: 0px;
+}
+div#header div#musicpanel div.bar > div.bar#seek-loaded {
 	background: #0099cc;
+	z-index: 6;
+	width: 0px;
 }
 div#header div#musicpanel .ui-slider {
 	z-index: 101;
@@ -419,6 +429,7 @@ div.item h2 {
 .item > .desc {
 	float: left;
 	overflow: hidden;
+	padding: 2px;
 }
 .wall > .item > .desc {
 	width: 182px;
@@ -470,13 +481,13 @@ div#filters div.popup > span {
 }
 
 #modal-cover {
-	position: absolute;
+	position: fixed;
 	top: 0; left: 0; right: 0; bottom: 0;
 	background: rgba(255, 255, 255, .6);
 	z-index: 999;
 }
 #modal {
-	position: absolute;
+	position: fixed;
 	top: 40px;
 	left: 200px;
 	right: 200px;
