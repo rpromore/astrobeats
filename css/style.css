@@ -305,13 +305,11 @@ div#content-left div#search p {
 }
 div#content div#content-right {
 	min-height: 100%;
-    position: relative;
+    position: absolute;
     display: inline-block;
     margin-left: 200px;
-    /* top: 0px; left: 200px; right: 0px; bottom: 0px; */
+    top: 0px; left: 0px; right: 0px; bottom: 0px;
     padding: 8px;
-    /* background: rgba(0, 0, 0, .05); */
-    /* box-shadow: -5px 0px 20px rgba(0, 0, 0, .1); */
 }
 div#content-right div#title {
 	font-family: Interstate, "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -334,11 +332,6 @@ div#loading {
 	color: #999;
 	color: rgba(0, 0, 0, .5);
 	text-shadow: 1px 1px 1px #FFF;
-	width: 100%;
-}
-
-#loading {
-	display: none;
 }
 .ball {
 	background-color: rgba(0,0,0,0);
@@ -459,6 +452,9 @@ div.item h2 {
 	height: 16px;
 	margin: 4px 7px;
 }
+.item > .more img.pause {
+	display: none;
+}
 div#filters {
 	margin: 1em;
 }
@@ -496,11 +492,13 @@ div#filters div.popup > span {
 	margin: 2px 0 2px 5px;
 }
 
+/*
 #modal-cover {
 	position: fixed;
 	top: 0; left: 0; right: 0; bottom: 0;
 	background: rgba(255, 255, 255, .6);
 	z-index: 999;
+	display: none;
 }
 #modal {
 	position: fixed;
@@ -512,6 +510,8 @@ div#filters div.popup > span {
 	background: #FFF;
 	border: 1px rgba(0, 0, 0, .3) solid;
 	box-shadow: 0 0 15px rgba(0, 0, 0, .3);
+	display: none;
+	min-width: 80%;
 }
 #modal > #close {
 	position: absolute;
@@ -523,6 +523,24 @@ div#filters div.popup > span {
 	font-family: verdana, sans-serif;
 	cursor: pointer;
 	color: #555;
+}
+*/
+
+.modal {
+	position: fixed;
+	top: 200px;
+	left: 400px;
+	right: 400px;
+	bottom: 40px;
+	z-index: 1000;
+	background: #FFF;
+	border: 1px rgba(0, 0, 0, .3) solid;
+	box-shadow: 0 0 15px rgba(0, 0, 0, .3);
+	display: none;
+	min-width: 60%;
+}
+.ui-widget-overlay {
+	background: rgba(255, 255, 255, .7);
 }
 #player {
 	position: absolute;
