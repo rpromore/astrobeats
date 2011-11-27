@@ -49,7 +49,7 @@ interface Services {
  */
 
 class Reddit implements Services {
-	protected $subreddits = array("listentothis");
+	protected $subreddits = array("listentothis", "music");
 	private $sortingMethods = array("hot", "new", "controversial", "top");
 	protected $items = array();
 	
@@ -79,6 +79,7 @@ class Reddit implements Services {
 				$arr = array();
 				$arr["title"] = $i["data"]["title"];
 				$arr["provider"] = $i["data"]["domain"];
+				if( $arr["provider"] == "self.Music" ) break;
 				$arr["image"] = $i["data"]["media"]["oembed"]["thumbnail_url"];
 				if( $arr["image"] != "" )
 					$arr["output"] = '<div class="thumb"><img src="' . $arr["image"] . '" /></div><div class="desc"><h2>' . $arr["title"] . '</h2></div>';
@@ -99,33 +100,27 @@ class Reddit implements Services {
 			}
 		}
 		return $ret;
-		/*
-		foreach( $this->items AS $k => $v ) {
-			$nest[$k] = array_slice($v, $start, $length);
-			foreach( $nest[$k] AS $i ) {
-				$arr = array();
-				$arr["title"] = $i["data"]["title"];
-				$arr["provider"] = $i["data"]["domain"];
-				$arr["image"] = $i["data"]["media"]["oembed"]["thumbnail_url"];
-				$arr["output"] = '<div class="thumb"><img src="' . $arr["image"] . '" /></div><div class="desc"><h2>' . $arr["title"] . '</h2></div>';;
-				$arr["artist"] = "";
-				// $arr["url"] = str_replace("watch?v=", "v/", $i["data"]["url"]);
-				$arr["url"] = YTvid($i["data"]["url"]);
-			}
-			$nest[$k] = $arr;
-			print_r($nest[$k]);
-		}
-		return $nest;
-		*/
 	}
 }
 
 class SoundCloud implements Services {
 	private $sortingMethods = array("created_at", "hotness");
 	protected $items = array();
+	protected $page;
 	
-	public function __construct($sortMethod = "hot", $page = 0) {
-		//
+	public function __construct($method = "tracks", $sortMethod = "hotness", $q = "") {
+		$clientId = "c6dc5b166e3d58345cc4751665f9ce08";
+		switch( $method ) {
+			case "tracks":
+				$this->items = json_decode(file_get_contents("http://api.soundcloud.com/tracks.json?q=$q&order=$sortMethod&client_id=$clientId"), true);
+				break;
+			case "users":
+				break;
+			case "playlists":
+				break;
+			case "resolve":
+				break;
+		}
 	}
 	public function getName() {
 		return "SoundCloud";
@@ -133,15 +128,26 @@ class SoundCloud implements Services {
 	public function getSortingMethods() {
 		return $this->sortingMethods;
 	}
-	public function getItems($start, $length) {
-		return $this->items;
+	public function getItems($start = 0, $length = LIMIT) {
+		$ret = array();
+		$this->items = array_slice($this->items, $start, $length);
+		foreach( $this->items AS $k => $i ) {
+			$arr = array();
+			$arr["title"] = $i["title"];
+			$arr["provider"] = "soundcloud.com";
+			$arr["image"] = !empty($i["artwork_url"]) ? $i["artwork_url"] : $i["user"]["avatar_url"];
+			$arr["image"] = str_replace("large.jpg", "t300x300.jpg", $arr["image"]);
+			preg_match("/(.*) \- (.*)/", $i["title"], $matches);
+			
+			$arr["artist"] = !empty($matches[1]) ? $matches[1] : "";
+			$arr["song"] = !empty($matches[2]) ? $matches[2] : "";
+			$arr["url"] = $i["permalink_url"];
+			
+			$arr["output"] = '<div class="thumb"><img src="' . $arr["image"] . '" /></div><div class="desc"><h2>' . $arr["title"] . '</h2></div>';
+			$ret[] = $arr;
+		}
+		return $ret;
 	}
-}
-
-$reddit = new Reddit();
-// print_r($reddit->getItems(0, 1));
-
-header('Content-type: application/json');
-echo json_encode($reddit->getItems(0, 10));		
+}	
 
 ?>

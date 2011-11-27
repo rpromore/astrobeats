@@ -15,9 +15,13 @@ window.player = {
 			var i = setInterval(function(){
 				var x = (window.player.getTimeElapsed()/window.player.getDuration())*100;
 				jQuery("#seek-loaded").width(x);
+				if( window.player.getTimeElapsed() == window.player.getDuration() ) {
+					clearInterval(i);
+					window.player.pause();
+					if( window.player.options.continuous )
+						jQuery("button#next").trigger("click");
+				}
 			}, 1000);
-			if( window.player.getTimeElapsed() == window.player.getDuration() )
-				clearInterval(i);
 			
 			// Player
 			if( window.player.type == "youtube" ) {
@@ -184,7 +188,6 @@ function onytStateChange(newState) {
 		i = setInterval(function(){
 			var n = (p.getVideoBytesLoaded()/p.getVideoBytesTotal())*100;
 			window.player.buffering(n);
-			console.log(n);
 		}, 1000);
 	}
 	else if( newState == 0 )

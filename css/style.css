@@ -30,7 +30,7 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 body {
         line-height: 1;
         color: black;
-         text-rendering: optimizeLegibility;
+         /*text-rendering: optimizeLegibility;*/
 }
 ol, ul {
         list-style: none;
@@ -84,7 +84,7 @@ div#header {
     margin: 0px;
     padding: 0px;
     position: fixed;
-    z-index: 100;
+    z-index: 1001;
     color: #777;
     color: rgba(0, 0, 0, .5);
     font-weight: bold;
@@ -100,10 +100,10 @@ div#header {
     white-space: nowrap; 
 }
 div#header::selection, div#header *::selection, div#content-left::selection, div#content-left *::selection {
-        background: transparent; /* Safari */
-        }
+	background: transparent; /* Safari */
+}
 div#header::-moz-selection, div#header *::-moz-selection, div#content-left::-moz-selection, div#content-left *::-moz-selection {
-        background: transparent; /* Firefox */
+	background: transparent; /* Firefox */
 }
 div#header div#title {
     width: 200px;
@@ -209,6 +209,7 @@ div#header div#musicpanel {
 	float: right;
 	line-height: 35px;
 	position: relative;
+	z-index: 1001;
 }
 div#header div#musicpanel button {
 	background: none;
@@ -309,7 +310,7 @@ div#content div#content-right {
     margin-left: 200px;
     /* top: 0px; left: 200px; right: 0px; bottom: 0px; */
     padding: 8px;
-    background: rgba(0, 0, 0, .05);
+    /* background: rgba(0, 0, 0, .05); */
     /* box-shadow: -5px 0px 20px rgba(0, 0, 0, .1); */
 }
 div#content-right div#title {
@@ -404,16 +405,16 @@ div.item {
 	display: inline-block;
 	overflow: hidden;
 	line-height: 20px !important;
-	font-family: "Istok Web", Arial, Verdana, sans-serif;
+	font-family: "Signika Negative", Arial, Verdana, sans-serif;
 	text-align: left;
+	font-size: 16px;
+	color: #353535;
 }
 div.item a {
 	color: #555;
 	font-weight: bold;
-	font-size: 14px;
 }
 div.item h2 {
-	font-size: 16px;
 	font-weight: bold;
 	margin: 3px;
 }
@@ -434,7 +435,7 @@ div.item h2 {
 .wall > .item > .desc {
 	width: 182px;
 	height: 182px;
-	background: rgba(255, 255, 255, .95);
+	background: rgba(255, 255, 255, .8);
 	position: absolute;
 	left: 187px;
 }
@@ -442,6 +443,21 @@ div.item h2 {
 	left: 0px;
 	float: left;
 	overflow: hidden;
+}
+.item > .more {
+	width: 100%;
+	height: 26px;
+	position: absolute;
+	bottom: -26px;
+	background: rgba(0, 0, 0, .75);
+	line-height: 26px;
+	color: #FFF;
+	text-align: center;
+}
+.item > .more img {
+	width: 16px;
+	height: 16px;
+	margin: 4px 7px;
 }
 div#filters {
 	margin: 1em;
@@ -507,4 +523,10 @@ div#filters div.popup > span {
 	font-family: verdana, sans-serif;
 	cursor: pointer;
 	color: #555;
+}
+#player {
+	position: absolute;
+	left: -1000px;
+	top: -1000px;
+	z-index: -1000;
 }
