@@ -63,9 +63,19 @@ html, body {
     padding: 0px;
 }
 body {
-    background: #F3F3F2 url(../img/soft_wallpaper.png) fixed;
+    background: #FFF url(../img/soft_wallpaper.png) fixed;
     font-size: 100%;
     font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
+}
+input[type=text] {
+    border: 1px #AAA solid;
+    border: 1px rgba(0, 0, 0, .25) solid;
+    padding: 2px;
+    margin: 4px;
+    color: #777;
+    color: rgba(0, 0, 0, .5);
+    width: 100%;
+    border-radius: 4px;
 }
 div.container {
     margin: 0px auto;
@@ -305,24 +315,28 @@ div#content-left div#search p {
 }
 div#content div#content-right {
 	min-height: 100%;
-    position: absolute;
-    display: inline-block;
-    margin-left: 200px;
-    top: 0px; left: 0px; right: 0px; bottom: 0px;
-    padding: 8px;
+	position: absolute;
+	display: inline-block;
+	margin-left: 200px;
+	top: 0px; left: 0px; right: 0px; bottom: 0px;
+	padding: 8px;
 }
-div#content-right div#title {
+div#content-right div.title {
 	font-family: Interstate, "Lucida Grande", Helvetica, Arial, sans-serif;
 	font-size: 22px;
 	color: #0099CC;
 }
-div#content-right div#title:first-letter {
+div#content-right div.title:first-letter {
 	text-transform: uppercase;
 }
 div#searchresults {
 	display: block;
 }
 
+div#loadhere {
+	margin: 0px auto;
+	padding-bottom: 100px;
+}
 div#loading {
 	margin: 5% auto;
 	text-align: center;
@@ -387,7 +401,7 @@ div.list div.item {
 div.wall div.item {
 	width: 182px;
 	height: 182px;
-	margin: 2px;
+	margin: 1px;
 	cursor: pointer;
 	background: rgba(0, 0, 0, .2);
 }
@@ -542,9 +556,11 @@ div#filters div.popup > span {
 .ui-widget-overlay {
 	background: rgba(255, 255, 255, .7);
 }
+/*
 #player {
 	position: absolute;
 	left: -1000px;
 	top: -1000px;
 	z-index: -1000;
 }
+*/
