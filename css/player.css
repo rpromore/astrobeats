@@ -1,37 +1,50 @@
 #musicbar {
 	width: 100%;
 	height: 60px;
-	background: rgb(255,255,255); /* Old browsers */
-	background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
-	background: linear-gradient(top, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+	background: rgb(235,235,235); /* Old browsers */
+	background: -moz-linear-gradient(top, rgba(235,235,235,1) 0%, rgba(219,219,219,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(235,235,235,1)), color-stop(100%,rgba(219,219,219,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(235,235,235,.7) 0%,rgba(219,219,219,.7) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(235,235,235,1) 0%,rgba(219,219,219,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(235,235,235,1) 0%,rgba(219,219,219,1) 100%); /* IE10+ */
+	background: linear-gradient(top, rgba(235,235,235,1) 0%,rgba(219,219,219,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ebebeb', endColorstr='#dbdbdb',GradientType=0 ); /* IE6-9 */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfff4', endColorstr='#b3bead',GradientType=0 ); /* IE6-9 */
 	position: fixed;
 	bottom: 0;
 	border-top: 1px #D6D6D6 solid;
 	z-index: 1000;
+	box-shadow: 0px -1px 8px 0px rgba(0, 0, 0, .3);
+}
+div#musicbar::selection, div#musicbar *::selection {
+	background: transparent;
 }
 #musicbar .button {
 	border-radius: 50%;
 	border: 1px rgba(0, 0, 0, .1) solid;
 	margin: 5px;
-	background: #FFF;
-	box-shadow: 0px 0px 1px 1px #FFF, inset 0px 0px 1px rgba(0, 0, 0, .4);
+	/* box-shadow: 0px 0px 1px 1px #FFF, inset 0px 0px 1px rgba(0, 0, 0, .4), 0px 5px 10px #FFF inset; */
+	box-shadow: 0px 2px 2px 1px rgba(255, 255, 255, .8) inset, 0px 0px 4px rgba(255, 255, 255, .4), 0px -2px 8px rgba(0,0, 0, .1) inset, 0px 2px 2px rgba(0, 0, 0, .4);
 	position: relative;
 	text-align: center;
 	float: left;
+	background: rgb(247,247,247);
+	background: -moz-linear-gradient(top,  rgba(247,247,247,1) 0%, rgba(230,230,230,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(247,247,247,1)), color-stop(100%,rgba(230,230,230,1)));
+	background: -webkit-linear-gradient(top,  rgba(247,247,247,1) 0%,rgba(230,230,230,1) 100%);
+	background: -o-linear-gradient(top,  rgba(247,247,247,1) 0%,rgba(230,230,230,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(247,247,247,1) 0%,rgba(230,230,230,1) 100%);
+	background: linear-gradient(top,  rgba(247,247,247,1) 0%,rgba(230,230,230,1) 100%); 
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#e6e6e6',GradientType=0 );
 }
-#musicbar .button.active {
-	background: #0099CC;
+#musicbar #eye.active {
 }
 #musicbar .button:hover {
 	background: #F7F7F7;
 }
 #musicbar .button:active {
-	box-shadow: 0px 0px 1px 1px #FFF, inset 0px 0px 10px rgba(0, 0, 0, .3);
+	background: #F0F0F0;
+	box-shadow: 0px 2px 2px 1px rgba(0, 0, 0, .3) inset, 0px -1px 0px 1px rgba(0, 0, 0, .25) inset, 0px 0px 4px rgba(0, 0, 0, .4), 0px -2px 8px rgba(255, 255, 255, .1) inset, 0px 2px 2px rgba(255, 255, 255, .9);
 }
 #musicbar .button.medium {
 	width: 40px;
@@ -41,7 +54,13 @@
 #musicbar .button.large {
 	width: 52px;
 	height: 52px;
-	margin-top: 3px;
+	margin-top: 2px;
+}
+#musicbar .button.small {
+	width: 30px;
+	height: 30px;
+	margin-top: -15px;
+	top: 50%;
 }
 #musicbar .button > .icon {
 	vertical-align: middle;
@@ -65,6 +84,12 @@
 	height: 24px;
 	margin-top: -12px;
 	margin-left: -12px;
+}
+#musicbar .button.small > .icon img {
+	width: 14px;
+	height: 14px;
+	margin-top: -7px;
+	margin-left: -7px;
 }
 #musicbar .button#prev > .icon img {
 	margin-left: -14px;
@@ -90,12 +115,21 @@
 	position: relative;
 	cursor: pointer;
 }
+#musicbar #seekbar > #time {
+	font-size: 12px;
+	position: absolute;
+	top: 30%;
+	color: #555;
+}
+#musicbar #seekbar > #time > span#played {
+	color: #0099CC;
+}
 #musicbar #seekbar > .bar {
 	max-width: 100%;
 	height: 2px;
 	background: #000;
 	position: absolute;
-	top: 50%;
+	top: 60%;
 	margin-top: 0px;
 }
 #musicbar #seekbar > #total {
@@ -128,6 +162,7 @@
 #musicbar #controls {
 	float: left;
 	width: 75%;
+	position: relative;
 }
 
 
@@ -147,4 +182,24 @@
 	position: absolute;
 	top: 0; left: 0; bottom: 0; right: 0;
 	box-shadow: 0px -3px 15px -2px rgba(0, 0, 0, .4) inset;
+}
+
+#volumecontrols {
+	position: relative;
+	float: left;
+	height: 60px;
+}
+#volumebar {
+	width: 100px;
+	float: left;
+	position: relative;
+	top: 50%;
+	margin-top: -3px;
+	margin-left: 10px;
+}
+#volumebar .ui-slider-handle {
+	background: url("jquery.ui/Aristo/images/slider_handles_gray.png") no-repeat scroll 0 -23px transparent
+}
+.button#volumelow, .button#muted {
+	display: none;
 }

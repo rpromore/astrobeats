@@ -4,6 +4,31 @@ Array.prototype.shuffle = function() {
 	while (s.length) this.push(s.pop());
 	return this;
 }
+
+var AstroBeats = (function(){
+	var AstroBeats = {
+		routes: {
+			'/explore': function(){ display("explore"); console.log("explore"); },
+			'/artists': function(){ display("artists"); console.log("artists"); },
+			'/artists/:artist': function(artist){ console.log(artist.artist); }
+		}
+	};
+	var services = {
+		reddit: {
+			
+		}
+	};
+	var favorites = {
+		tracks: {},
+		albums: {},
+		artists: {},
+		events: {},
+		add: function(type, x) {
+			window.favorites[type].push(x);
+		}
+	};
+})();
+
 $(document).ready(function(){
 	$(document).bind("ajaxStart.main", function(){
 		$("#loading").show();
@@ -13,40 +38,47 @@ $(document).ready(function(){
 		$("#loadhere").show();
 	});
 	
-	$.routes({
-		'/': function(){ display("explore"); },
-		'/explore': function(){ display("explore"); },
-		'/explore/:id': function(id){ console.log(id); },
-		'/artists': function(){ display("artists"); },
-		'/artists/:id': function(id){ display_artist(id.id); }
+	$.getJSON("lib/services.php?a=getFilters", function(data){
+		$.each(data, function(k, v) {
+			$list = $("<ul>");
+			$.each(v, function(j, u) {
+				console.log(j+": "+u.type);
+				if( u.type == "checkbox" ) {
+					$j = '<input type="checkbox" id="'+j+'" /><label for="'+j+'">'+j+'</label>';
+				}
+				else if( u.type == "select" ) {
+					$j = $('<select name="'+j+'" />').before(j);
+					$.each(u.options, function(key, option) {
+						$j.append('<option value="'+option+'">'+option+'</option>');
+					});
+				}
+				$list.append($j);
+			});
+			$i = $("<input>", {
+				name: "filters",
+				type: "checkbox",
+				value: k,
+				id: k
+			}).after('<label for="'+k+'">'+k+'</label>');
+			$i.appendTo("#filters").after($list).button();
+		});
 	});
 	
-	if( $.address.path() == '/' || $.address.path() == '/#' )
-		$.address.value("explore");
-	else {
-		// var addr = $.address.path().replace("/", "");
-		// $("#"+addr).addClass("active").siblings("li").removeClass("active");
+	$.routes({
+		'/explore': function(){ display("explore"); console.log("explore"); },
+		'/artists': function(){ display("artists"); console.log("artists"); },
+		'/artists/:artist': function(artist){ console.log(artist.artist); }
+	});
+	
+	if( !$.routes("get") || $.routes("get") == "" ){
+		window.location = "#/explore";
 	}
+	
+	places_highlight($.address.pathNames()[0]);
 	
 	function places_highlight(id) {
-		$("#"+id).addClass("active").siblings("li").removeClass("active");
+		$("ul#places").find("#"+id).addClass("active").siblings("li").removeClass("active");
 	}
-		
-	$.address.change(function(e){
-		var p = e.pathNames;
-		if( p[0] == "explore" ) {
-			places_highlight("explore");
-			display("explore");
-		}
-		else if( p[0] == "artists" ) {
-			places_highlight("artists");
-			if( p.length > 1 )
-				display_artist(p[1]);
-			else
-				display("artists");
-		}
-			
-	});
 	
 	function display_artist(id) {
 		id = id.replace(/\+/g, ' ');
@@ -97,6 +129,9 @@ $(document).ready(function(){
 							e.stopPropagation();
 						}).appendTo($more);
 						
+						$("<div>", {
+							class: "item-shadow"
+						}).appendTo(item);
 						
 						$("#loadhere").append(item);
 					});
@@ -119,7 +154,7 @@ $(document).ready(function(){
 								$(this).children(".desc").stop().animate({ left: "0px" }, {duration: 400, easing: "easeOutExpo"});
 								$(this).children(".more").stop().animate({ bottom: "0px" }, {duration: 500, easing: "easeOutExpo"}).children("img.pause").show().siblings("img.play").hide();
 								
-								if( $(this).attr("data-provider") == "youtube.com" ) {
+								if( $(this).attr("data-provider") == "youtube.com" || $(this).attr("data-provider") == "youtu.be" ) {
 									embed("youtube", $(this).attr("data-url"));
 								}
 								else if( $(this).attr("data-provider") == "soundcloud.com" ) {

@@ -63,19 +63,9 @@ html, body {
     padding: 0px;
 }
 body {
-    background: #FFF url(../img/soft_wallpaper.png) fixed;
+    background: #FFF url(../img/exclusive_paper.png) fixed;
     font-size: 100%;
     font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
-}
-input[type=text] {
-    border: 1px #AAA solid;
-    border: 1px rgba(0, 0, 0, .25) solid;
-    padding: 2px;
-    margin: 4px;
-    color: #777;
-    color: rgba(0, 0, 0, .5);
-    width: 100%;
-    border-radius: 4px;
 }
 div.container {
     margin: 0px auto;
@@ -99,10 +89,14 @@ div#header {
     color: rgba(0, 0, 0, .5);
     font-weight: bold;
     text-shadow: 0px 1px 0px rgba(255, 255, 255, 1);
-    background: #FEFEFA;
-    background: -moz-linear-gradient(top, #FAFAFA 0%, #E4E4E4 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FAFAFA), color-stop(100%,#E4E4E4));
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FAFAFA', endColorstr='#E4E4E4',GradientType=0 );
+	background: rgb(250,250,250); /* Old browsers */
+	background: -moz-linear-gradient(top, rgba(250,250,250,1) 0%, rgba(228,228,228,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(250,250,250,1)), color-stop(100%,rgba(228,228,228,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(250,250,250,.7) 0%,rgba(228,228,228,.7) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(250,250,250,1) 0%,rgba(228,228,228,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(250,250,250,1) 0%,rgba(228,228,228,1) 100%); /* IE10+ */
+	background: linear-gradient(top, rgba(250,250,250,1) 0%,rgba(228,228,228,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#e4e4e4',GradientType=0 ); /* IE6-9 */
  	border-bottom: 1px #BBB solid;
     -moz-box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, .2);
     -webkit-box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, .2);
@@ -149,6 +143,7 @@ div#header ul#places {
     margin: 0px auto;
     font-size: 12px;
     color: #777;
+    overflow: hidden;
 }
 div#header ul#places > li {
     min-height: 100%;
@@ -272,38 +267,46 @@ div#content {
 }
 div#content div#content-left {
     position: fixed;
+    top: 35px;
+    bottom: 60px;
     width: 200px;
-    height: 100%;
     background: #ECECEC;
-    box-shadow: 0px 0px 3px rgba(0, 0, 0, .12) inset, 0px 0px 10px rgba(0, 0, 0, .4) /*, -3px 0px 20px rgba(0, 0, 0, .03)*/;
+    box-shadow: 0px 0px 1px rgba(0, 0, 0, .2), 0px 0px 6px rgba(0, 0, 0, .4) inset, 0px 0px 1px 1px rgba(255, 255, 255, 1);
     overflow: visible;
     border: 1px rgba(0, 0, 0, .14) solid;
     border-top: none;
     border-bottom: none;
-    background: rgba(0, 0, 0, .1);
+    background: rgba(0, 0, 0, .03);
+    overflow-x: hidden;
+    overflow-y: auto;
 }
-div#content-left label {
+div#content-left label.title {
 	font-weight: bold;
-	margin: 7px;
 	display: block;
 	color: #777;
 	text-align: left;
 	font-size: 1.1em;
 }
-div#content-left div#search {
-    position: absolute;
-    top: 0; right: 0; bottom: 0; left: 0;
-    margin: 0px;
+div#content-left p {
+	margin: 5px 0px 5px 3px;
+	color: #444;
 }
-div#content-left div#search > input[type=text] {
+div#content-left input[type=text]#search {
 	width: 93%;
-	height: 20px;
+	height: 17px;
 	outline: none;
 	box-shadow: 0px 0px 1px 1px rgba(255, 255, 255, .6), 0px 2px 1px rgba(0, 0, 0, .1) inset;
     transition: all 0.25s ease-in-out;
     -webkit-transition: all 0.25s ease-in-out;
     -moz-transition: all 0.25s ease-in-out;
     background: rgba(255, 255, 255, .85);
+    border: 1px #AAA solid;
+    border: 1px rgba(0, 0, 0, .25) solid;
+    padding: 2px;
+    margin: 4px;
+    color: #777;
+    color: rgba(0, 0, 0, .5);
+    border-radius: 20px;
 }
 div#content-left div#search div#thumbnail-size {
 	width: 90%;
@@ -555,6 +558,16 @@ div#filters div.popup > span {
 }
 .ui-widget-overlay {
 	background: rgba(255, 255, 255, .7);
+}
+.item-shadow {
+    background: url("http://static.tumblr.com/njty47g/yu0leufgq/post_shadow.png") no-repeat scroll left top transparent;
+    bottom: -10px;
+    display: block;
+    height: 10px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 2;
 }
 /*
 #player {

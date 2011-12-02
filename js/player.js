@@ -11,7 +11,7 @@ window.player = {
 	},
 	play: function(){
 		if( window.player.handler != null && window.player.type != null ) {
-			// UI
+			// UI			
 			jQuery(".button#play").hide();
 			jQuery(".button#pause").show();
 			jQuery(".playing").find(".more").find(".pause").show().siblings(".play").hide();
@@ -20,7 +20,7 @@ window.player = {
 				var x = (window.player.getTimeElapsed()/window.player.getDuration())*jQuery("#seekbar").width();
 				jQuery("#seekbar #played").width(x);
 				if( window.player.getTimeElapsed() == window.player.getDuration() ) {
-					window.player.stop();
+					// window.player.stop();
 					if( window.player.options.continuous )
 						jQuery(".button#next").trigger("click");
 					clearInterval(window.player.timer);
@@ -68,18 +68,25 @@ window.player = {
 			}
 			else
 				console.log("Unsupported handler type.");
+			
+			clearInterval(window.player.timer);
+			handler = null;
 		}
 	},
 	setVolume: function(x){
 		if( window.player.handler != null && window.player.type != null ) {
 			// UI
 			if( x == 0 ) {
-				jQuery(".button#volumeon").hide();
-				jQuery(".button#volumeoff").show();
+				jQuery(".button#volumelow, .button#volumehigh").hide();
+				jQuery(".button#muted").show();
+			}
+			else if( x > 0 && x < 50 ) {
+				jQuery(".button#volumehigh, .button#muted").hide();
+				jQuery(".button#volumelow").show();
 			}
 			else {
-				jQuery(".button#volumeon").show();
-				jQuery(".button#volumeoff").hide();
+				jQuery(".button#volumelow, .button#muted").hide();
+				jQuery(".button#volumehigh").show();
 			}
 			
 			// Player
@@ -145,8 +152,8 @@ window.player = {
 				return window.player.handler.api_getTrackDuration();
 			}
 			else {
-				return false;
 				console.log("Unsupported handler type.");
+				return false;
 			}
 		}
 	},
@@ -159,8 +166,8 @@ window.player = {
 				return window.player.handler.api_getTrackPosition();
 			}
 			else {
-				return false;
 				console.log("Unsupported handler type.");
+				return false;
 			}
 		}
 	},
@@ -170,6 +177,8 @@ window.player = {
 		}
 	},
 	onReady: function(playerId){
+		// stop any running videos
+		window.player.stop();
 		window.player.handler = playerId;
 		if( window.player.options.autoplay ) {
 			window.player.play();
@@ -188,53 +197,41 @@ function onYouTubePlayerReady(playerId) {
 	window.player.type = "youtube";
 	window.player.onReady(p);
 }
+var buffer_timer = null;
 function onytStateChange(newState) {
+	clearInterval(buffer_timer);
 	var p = document.getElementById("player");
-	if( newState == 3 ) {
-		// buffering
-		window.player.timer = setInterval(function(){
-			var n = (p.getVideoBytesLoaded()/p.getVideoBytesTotal())*100;
-			window.player.buffering(n);
-			if( p.getVideoBytesLoaded() == p.getVideoBytesTotal() )
-				clearInterval(window.player.timer);
-		}, 1000);
-	}
-	else if( newState == 0 )
-		clearInterval(window.player.timer);
+	buffer_timer = setInterval(function(){
+		var n = (p.getVideoBytesLoaded()/p.getVideoBytesTotal())*100;
+		window.player.buffering(n);
+	}, 1000);
+	
+	if( p.getVideoBytesLoaded() == p.getVideoBytesTotal() || newState == 0 || newState == -1 )
+		clearInterval(buffer_timer);
 }
 soundcloud.addEventListener("onPlayerReady", function(scPlayer, data) {
 	window.player.type = "soundcloud";
 	window.player.onReady(scPlayer);
 });
 soundcloud.addEventListener('onMediaBuffering', function(player, data) {
+	clearInterval(buffer_timer);
 	window.player.buffering(data.percent);
 });
 
 function embed(type, url) {
+	window.player.handler = null;
+	window.player.type = null;
 	switch( type ) {
 		case "youtube":
-		case "youtu.be":
 			window.player.url = url;
-			if( window.player.type == "youtube" ) {
-				window.player.load(url);
-			}
-			else {
-				window.player.type = "youtube";
-				swfobject.embedSWF("http://www.youtube.com/v/"+url+"?controls=0&enablejsapi=1&playerapiid=ytplayer&version=3&wmode=transparent", "player", "425", "256", "8", null, null, window.player.parameters, window.player.attributes);
-				// swfobject.embedSWF("http://www.youtube.com/apiplayer?enablejsapi=1&playerapiid=ytplayer&version=3&wmode=transparent", "player", "425", "256", "8", null, null, window.player.parameters, window.player.attributes);
-				// window.player.load(url);
-			}
+			window.player.type = "youtube";
+			swfobject.embedSWF("http://www.youtube.com/v/"+url+"?controls=0&enablejsapi=1&playerapiid=ytplayer&version=3&wmode=transparent", "player", "425", "256", "8", null, null, window.player.parameters, window.player.attributes);
 			break;
 		case "soundcloud":
 			window.player.url = url;
 			window.player.flashvars.url = url;
-			if( window.player.type == "soundcloud" ) {
-				window.player.load(url);
-			}
-			else {
-				window.player.type = "soundcloud";
-				swfobject.embedSWF("http://player.soundcloud.com/player.swf", "player", "425", "256", "9.0.0","expressInstall.swf", window.player.flashvars, window.player.parameters, window.player.attributes);
-			}
+			window.player.type = "soundcloud";
+			swfobject.embedSWF("http://player.soundcloud.com/player.swf", "player", "425", "256", "9.0.0","expressInstall.swf", window.player.flashvars, window.player.parameters, window.player.attributes);
 			break;
 	}
 }
