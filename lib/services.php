@@ -18,16 +18,11 @@ function YTvid($videourl) {
         $ytpath = parse_url($videourl);
         if( $ytpath['host'] == 'youtu.be' )
             $ytid = ltrim( $ytpath['path'],'/');
-    }           
+    }
     return $longurl ? $ytid[0] : $ytid;
 }
 
-interface Services {
-	/**
-	 * @return Name of service.
-	 */
-	public function getName();
-	
+interface Service {	
 	// sorting methods
 	/**
 	 * @return Array of sorting methods.
@@ -38,9 +33,33 @@ interface Services {
 	 * @return Array
 	 */
 	public function getItems($start, $length);
-
 }
 
+class Services implements Service {
+	protected static $services = array();
+	
+	public function getServices() {
+		return Services::$services;
+	}
+	public function addService($arr) {
+		Services::$services = array_merge(Services::$services, $arr);
+	}
+	public function getSortingMethods(){
+		
+	}
+	public function getItems($start, $length) {
+		
+	}
+}
+/*
+class ServiceRoutine extends Services {
+	public function getServices() {
+		return parent::getServices();
+	}
+	public function getItems($start, $length) {
+	}
+}
+*/
 /**
  * Please ensure arrays are returned in following format:
  * title: string,
@@ -48,22 +67,21 @@ interface Services {
  * service: string
  */
 
-class Reddit implements Services {
-	protected $subreddits = array("listentothis", "music");
-	private $sortingMethods = array("hot", "new", "controversial", "top");
+class Reddit extends Services {
+	protected $subreddits = array("listentothis");
+	private $sortingMethods = array(
+								"hot" => array("type" => "checkbox"), 
+								"new" => array("type" => "checkbox"), 
+								"controversial" => array("type" => "checkbox"), 
+								"top" => array("type" => "checkbox"),
+								"subreddits" => array("type" => "select", "options" => array("listentothis", "music"))
+							  );
 	protected $items = array();
 	
 	public function __construct($sortMethod = "hot", $page = 0) {
-		if( !in_array($sortMethod, $this->sortingMethods) )
+		if( !array_key_exists($sortMethod, $this->sortingMethods) )
 			die("Sorting method not available.");
-		
-		foreach( $this->subreddits AS $i ) {
-			$nest = json_decode(file_get_contents("http://reddit.com/r/$i/$sortMethod.json?limit=" . MAXLIMIT), true);
-			$this->items[$i] = $nest["data"]["children"];
-		}
-	} 
-	public function getName() {
-		return "Reddit";
+		parent::addService(array("Reddit" => $this->sortingMethods));
 	}
 	public function addSubReddit($subReddit) {
 		$this->subreddits[] = $subReddit;
@@ -72,6 +90,13 @@ class Reddit implements Services {
 		return $this->sortingMethods;
 	}
 	public function getItems($start = 0, $length = LIMIT) {
+		foreach( $this->subreddits AS $i ) {
+			$nest = json_decode(file_get_contents("http://reddit.com/r/$i/$sortMethod.json?limit=" . MAXLIMIT), true);
+			$this->items[$i] = $nest["data"]["children"];
+		}
+		
+		// TODO: caching
+		
 		$ret = array();
 		foreach( $this->items AS $k => $v ) {
 			$nest = array_slice($v, $start, $length);
@@ -79,7 +104,9 @@ class Reddit implements Services {
 				$arr = array();
 				$arr["title"] = $i["data"]["title"];
 				$arr["provider"] = $i["data"]["domain"];
-				if( $arr["provider"] == "self.Music" ) break;
+				
+				// if( $arr["provider"] == "self.Music" ) break;
+				
 				$arr["image"] = $i["data"]["media"]["oembed"]["thumbnail_url"];
 				if( $arr["image"] != "" )
 					$arr["output"] = '<div class="thumb"><img src="' . $arr["image"] . '" /></div><div class="desc"><h2>' . $arr["title"] . '</h2></div>';
@@ -92,7 +119,7 @@ class Reddit implements Services {
 				$arr["artist"] = !empty($matches[1]) ? $matches[1] : "";
 				$arr["song"] = !empty($matches[2]) ? $matches[2] : "";
 				
-				if( $arr["provider"] == "youtube.com" )
+				if( $arr["provider"] == "youtube.com" || $arr["provider"] == "youtu.be" )
 					$arr["url"] = YTvid($i["data"]["url"]);
 				else
 					$arr["url"] = $i["data"]["url"];
@@ -103,14 +130,28 @@ class Reddit implements Services {
 	}
 }
 
-class SoundCloud implements Services {
-	private $sortingMethods = array("created_at", "hotness");
+class SoundCloud extends Services {
+	private $sortingMethods = array(
+								"created_at" => array("type" => "checkbox"), 
+								"hotness" => array("type" => "checkbox")
+							  );
 	protected $items = array();
 	protected $page;
+	protected $method;
+	private $clientId = "c6dc5b166e3d58345cc4751665f9ce08";
 	
 	public function __construct($method = "tracks", $sortMethod = "hotness", $q = "") {
-		$clientId = "c6dc5b166e3d58345cc4751665f9ce08";
-		switch( $method ) {
+		parent::addService(array("SoundCloud" => $this->sortingMethods));
+		$this->method = $method;
+	}
+	public function getName() {
+		return "SoundCloud";
+	}
+	public function getSortingMethods() {
+		return $this->sortingMethods;
+	}
+	public function getItems($start = 0, $length = LIMIT) {
+		switch( $this->method ) {
 			case "tracks":
 				$this->items = json_decode(file_get_contents("http://api.soundcloud.com/tracks.json?q=$q&order=$sortMethod&client_id=$clientId"), true);
 				break;
@@ -121,14 +162,6 @@ class SoundCloud implements Services {
 			case "resolve":
 				break;
 		}
-	}
-	public function getName() {
-		return "SoundCloud";
-	}
-	public function getSortingMethods() {
-		return $this->sortingMethods;
-	}
-	public function getItems($start = 0, $length = LIMIT) {
 		$ret = array();
 		$this->items = array_slice($this->items, $start, $length);
 		foreach( $this->items AS $k => $i ) {
@@ -148,6 +181,20 @@ class SoundCloud implements Services {
 		}
 		return $ret;
 	}
-}	
+}
+
+$a = isset($_GET["a"]) ? $_GET["a"] : "";
+
+new Reddit();
+new SoundCloud();
+$S = new Services();
+if( $a == "getFilters" ) 
+	echo json_encode($S->getServices());
+
+
+// beatport
+// lastfm
+// 8tracks
+// jamendo
 
 ?>
