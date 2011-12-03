@@ -133,7 +133,7 @@
 		</div>
 		<div class="spacer">&nbsp;</div>
 		<div id="seekbar">
-			<div id="time"><span id="played">00:00</span> / 00:00</div>
+			<div id="time"><span id="played">00:00</span> / <span id="total-time">00:00</span></div>
 			<div class="bar" id="total"></div>
 			<div class="bar" id="buffered"></div>
 			<div class="bar" id="played"></div>
