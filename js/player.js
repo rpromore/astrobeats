@@ -1,3 +1,22 @@
+function round(n,dec) {
+	n = parseFloat(n);
+	if(!isNaN(n)){
+		if(!dec) var dec= 0;
+		var factor= Math.pow(10,dec);
+		return Math.floor(n*factor+((n*factor*10)%10>=5?1:0))/factor;
+	}else{
+		return n;
+	}
+}
+function toMinutes(s) {
+	var minutes = Math.floor(s/60);
+	if( minutes.toString().length == 1 )
+		minutes = '0'+minutes;
+	var seconds = round(s - minutes * 60, 0);
+	if( seconds.toString().length == 1 )
+		seconds = '0'+seconds;
+	return minutes+':'+seconds;
+}
 window.player = {
 	handler: null,
 	type: null,
@@ -19,6 +38,8 @@ window.player = {
 			window.player.timer = setInterval(function(){
 				var x = (window.player.getTimeElapsed()/window.player.getDuration())*jQuery("#seekbar").width();
 				jQuery("#seekbar #played").width(x);
+				jQuery("#seekbar #time #played").html(toMinutes(window.player.getTimeElapsed()));
+				jQuery("#seekbar #time #total-time").html(toMinutes(window.player.getDuration()));
 				if( window.player.getTimeElapsed() == window.player.getDuration() ) {
 					// window.player.stop();
 					if( window.player.options.continuous )

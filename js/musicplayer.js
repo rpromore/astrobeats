@@ -31,17 +31,18 @@ $(document).ready(function(){
 	$(".button#next").click(function(){
 		$(".item.playing").next(".item").trigger("click");
 	});
-	$(".button#heart").button({
-		text: false,
-		icons: {
-			primary: "ui-icon-heart"
+	$(".button#heart").click(function(){
+		if( $(this).is(".active") ) {
+			$(this).removeClass("active").find("img").attr("src", "img/musicplayer/heart.png");
+			// todo add to favorites
+		}
+		else {
+			$(this).addClass("active").find("img").attr("src", "img/musicplayer/heart-active.png");
+			
 		}
 	});
-	$(".button#download").button({
-		text: false,
-		icons: {
-			primary: "ui-icon-arrowthickstop-1-s"
-		}
+	$(".button#download").click(function(){
+		
 	});
 	
 	var lastVolume = 100;

@@ -105,6 +105,11 @@
 				<img src="img/musicplayer/info.png" />
 			</div>
 		</div>
+		<div class="button medium" id="heart">
+			<div class="icon">
+				<img src="img/musicplayer/heart.png" />
+			</div>
+		</div>
 		<div class="button medium" id="eye">
 			<div class="icon">
 				<img src="img/musicplayer/eye.png" />

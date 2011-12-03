@@ -77,11 +77,13 @@ class Reddit extends Services {
 								"subreddits" => array("type" => "select", "options" => array("listentothis", "music"))
 							  );
 	protected $items = array();
+	private $sortMethod;
 	
 	public function __construct($sortMethod = "hot", $page = 0) {
 		if( !array_key_exists($sortMethod, $this->sortingMethods) )
 			die("Sorting method not available.");
 		parent::addService(array("Reddit" => $this->sortingMethods));
+		$this->sortMethod = $sortMethod;
 	}
 	public function addSubReddit($subReddit) {
 		$this->subreddits[] = $subReddit;
@@ -91,7 +93,7 @@ class Reddit extends Services {
 	}
 	public function getItems($start = 0, $length = LIMIT) {
 		foreach( $this->subreddits AS $i ) {
-			$nest = json_decode(file_get_contents("http://reddit.com/r/$i/$sortMethod.json?limit=" . MAXLIMIT), true);
+			$nest = json_decode(file_get_contents("http://reddit.com/r/$i/" . $this->sortMethod . ".json?limit=" . MAXLIMIT), true);
 			$this->items[$i] = $nest["data"]["children"];
 		}
 		
