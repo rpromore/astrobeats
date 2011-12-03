@@ -42,9 +42,9 @@ $(document).ready(function(){
 		$.each(data, function(k, v) {
 			$list = $("<ul>");
 			$.each(v, function(j, u) {
-				console.log(j+": "+u.type);
+				// console.log(j+": "+u.type);
 				if( u.type == "checkbox" ) {
-					$j = '<input type="checkbox" id="'+j+'" /><label for="'+j+'">'+j+'</label>';
+					$j = '<input type="checkbox" id="'+j+'" /><label for="'+j+'">'+j+'</label><br />';
 				}
 				else if( u.type == "select" ) {
 					$j = $('<select name="'+j+'" />').before(j);
@@ -54,13 +54,35 @@ $(document).ready(function(){
 				}
 				$list.append($j);
 			});
-			$i = $("<input>", {
-				name: "filters",
-				type: "checkbox",
-				value: k,
-				id: k
-			}).after('<label for="'+k+'">'+k+'</label>');
-			$i.appendTo("#filters").after($list).button();
+			$h = '<input type="checkbox" id="'+k+'" value="'+k+'" name="filters" checked="yes" /><label for="'+k+'">'+k+'</label>';
+			$("#filters").append($h).append($list);
+            $("#filters")
+				.find("input[name=filters]")
+					.button({ icons: { primary: "ui-icon-check", secondary: "ui-icon-triangle-1-n" }, text: true })
+					.live("click", function(){
+						if( this.checked ) {
+							$(this).next().next("ul").stop().show();
+							$(this).button("option", "icons", {primary: "ui-icon-check", secondary: "ui-icon-triangle-1-n"});
+						}
+						else {
+							$(this).next().next("ul").stop().hide();
+							$(this).button("option", "icons", {primary: "ui-icon-close", secondary: "ui-icon-triangle-1-s"});
+						}
+					});
+			$("#filters")
+				.find(".ui-button").eq(0).css({ "border-top-left-radius": "2px", "border-top-right-radius": "2px" })
+				.siblings(".ui-button:last").next("ul:visible").css({ "border-bottom-left-radius": "2px", "border-bottom-right-radius": "2px", "border-bottom": "1px #BFBFBF solid" })
+			$("#filters")
+				.find(".ui-button:last")
+				.live("click", function(){
+					if( $(this).next("ul").is(":visible") ) {
+						$(this).css({ "border-bottom-left-radius": "4px", "border-bottom-right-radius": "4px", "border-bottom": "1px #BFBFBF solid" });
+					}
+					else {
+						$(this).css({ "border-radius": "0px", "border-bottom": "none" });
+					}
+				});
+			;
 		});
 	});
 	
