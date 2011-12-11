@@ -1,132 +1,174 @@
-Array.prototype.shuffle = function() {
-	var s = [];
-	while (this.length) s.push(this.splice(Math.random() * this.length, 1));
-	while (s.length) this.push(s.pop());
-	return this;
+// Following 2 functions from phpjs.
+function urldecode(str) {
+   return decodeURIComponent((str+'').replace(/\+/g, '%20'));
 }
-
-var AstroBeats = (function(){
-	var AstroBeats = {
-		routes: {
-			'/explore': function(){ display("explore"); console.log("explore"); },
-			'/artists': function(){ display("artists"); console.log("artists"); },
-			'/artists/:artist': function(artist){ console.log(artist.artist); }
+function urlencode (str) {
+	str = (str + '').toString();
+    return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
+    replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
+}
+function shiftOtherChildren(){
+	$("#loadhere").children(":not(#tracks)").hide();
+	$("#loadhere #tracks").css("bottom", "1000px");
+}
+var Astrobeats = {
+	options: {
+		scrollLoad: true,
+		scrollLoadOffset: 150
+	},
+	routes: {
+		'/tracks': function(){
+			Astrobeats.pages.tracks.load();
+		},
+		'/tracks/*': function(t){
+			matches = urldecode(t.path).replace(/\+/g, ' ').split("_");			
+			Astrobeats.pages.tracks.load(0, matches);
 		}
-	};
-	var services = {
-		reddit: {
-			
-		}
-	};
-	var favorites = {
-		tracks: {},
-		albums: {},
-		artists: {},
-		events: {},
-		add: function(type, x) {
-			window.favorites[type].push(x);
-		}
-	};
-})();
-
-$(document).ready(function(){
-	$(document).bind("ajaxStart.main", function(){
-		$("#loading").show();
-		$("#loadhere").hide();
-	}).bind("ajaxStop.main", function(){
-		$("#loading").hide();
-		$("#loadhere").show();
-	});
-	
-	$.getJSON("lib/services.php?a=getFilters", function(data){
-		$.each(data, function(k, v) {
-			$list = $("<ul>");
-			$.each(v, function(j, u) {
-				// console.log(j+": "+u.type);
-				if( u.type == "checkbox" ) {
-					$j = '<input type="checkbox" id="'+j+'" /><label for="'+j+'">'+j+'</label><br />';
-				}
-				else if( u.type == "select" ) {
-					$j = $('<select name="'+j+'" />').before(j);
-					$.each(u.options, function(key, option) {
-						$j.append('<option value="'+option+'">'+option+'</option>');
-					});
-				}
-				$list.append($j);
-			});
-			$h = '<input type="checkbox" id="'+k+'" value="'+k+'" name="filters" checked="yes" /><label for="'+k+'">'+k+'</label>';
-			$("#filters").append($h).append($list);
-            $("#filters")
-				.find("input[name=filters]")
-					.button({ icons: { primary: "ui-icon-check", secondary: "ui-icon-triangle-1-n" }, text: true })
-					.live("click", function(){
-						if( this.checked ) {
-							$(this).next().next("ul").stop().show();
-							$(this).button("option", "icons", {primary: "ui-icon-check", secondary: "ui-icon-triangle-1-n"});
+	},
+	queue: [],
+	pages: {
+		tracks: {
+			hasLoaded: false,
+			load: function(page, params){
+				if( typeof page == "undefined" )
+					page = 0;
+				if( typeof service == "undefined" )
+					service = null;
+				if( typeof uid == "undefined" )
+					uid = null;
+					
+				// $("div#loadhere div#tracks").show().css("top", "0px"); 
+				
+				if( params == null ) {
+					// list all
+					$("#loadhere").children("#tracks").show().css({ left: 0, right: 0, overflow: "hidden" }).siblings().hide();
+					if( !this.hasLoaded ) {
+						var i = 0;
+						
+						console.log($(window).height());
+						console.log($(document).height());
+						
+						var t = setInterval(function(){
+							if( $(document).height() <= $(window).height() )
+								Astrobeats.items.loadItems($("div#loadhere div#tracks"), "tracks", i++);
+							else
+								clearInterval(t);
+						}, 1000);
+						
+						Astrobeats.items.loadItems($("div#loadhere div#tracks"), "tracks", i++);
+						if( Astrobeats.options.scrollLoad ) {
+							$(document).scroll(function(e){
+								if( $(window).scrollTop() >= $(document).height() - $(window).height() - Astrobeats.options.scrollLoadOffset ) {
+									Astrobeats.items.loadItems($("div#loadhere div#tracks"), "tracks", i++);
+								}
+							});
 						}
-						else {
-							$(this).next().next("ul").stop().hide();
-							$(this).button("option", "icons", {primary: "ui-icon-close", secondary: "ui-icon-triangle-1-s"});
-						}
-					});
-			$("#filters")
-				.find(".ui-button").eq(0).css({ "border-top-left-radius": "2px", "border-top-right-radius": "2px" })
-				.siblings(".ui-button:last").next("ul:visible").css({ "border-bottom-left-radius": "2px", "border-bottom-right-radius": "2px", "border-bottom": "1px #BFBFBF solid" })
-			$("#filters")
-				.find(".ui-button:last")
-				.live("click", function(){
-					if( $(this).next("ul").is(":visible") ) {
-						$(this).css({ "border-bottom-left-radius": "4px", "border-bottom-right-radius": "4px", "border-bottom": "1px #BFBFBF solid" });
+						this.hasLoaded = true;
 					}
-					else {
-						$(this).css({ "border-radius": "0px", "border-bottom": "none" });
-					}
-				});
-			;
-		});
-	});
-	
-	$.routes({
-		'/explore': function(){ display("explore"); console.log("explore"); },
-		'/artists': function(){ display("artists"); console.log("artists"); },
-		'/artists/:artist': function(artist){ console.log(artist.artist); }
-	});
-	
-	if( !$.routes("get") || $.routes("get") == "" ){
-		window.location = "#/explore";
-	}
-	
-	places_highlight($.address.pathNames()[0]);
-	
-	function places_highlight(id) {
-		$("ul#places").find("#"+id).addClass("active").siblings("li").removeClass("active");
-	}
-	
-	function display_artist(id) {
-		id = id.replace(/\+/g, ' ');
-		$("#loadhere").html(id);
-	}
-	
-	function display(page) {
-		$container = $("#loadhere");
-		switch(page) {
-			case "artists":
-				break;
-			case "explore":
-				$("#loadhere").html("");
-				$.getJSON("lib/explore.php", function(data){
-					$.each(data, function(k, v) {
-						item = $("<div>", {
-							class: "item",
-							"data-provider": v["provider"],
-							"data-url": v["url"],
-							"data-title": v["title"],
-							"data-artist": v["artist"],
-							html: v["output"]
-						});
-						$more = $("<div>", {
-							class: "more"
-						}).appendTo(item);
+				}
+				else {
+					// list single item					
+					$("#loadhere").children("#tracks-info").show().siblings().hide();
+					$("#loadhere").children("#tracks").show().css({ left: "-1000%", right: "1000%" });
+					Astrobeats.items.loadItem($("div#loadhere div#tracks-info"), "tracks", params);
+				}
+			}
+		},
+		artists: {
+			hasLoaded: false,
+			load: function(page, service, uid){
+				if( typeof page == "undefined" )
+					page = 0;
+				if( typeof service == "undefined" )
+					service = null;
+				if( typeof uid == "undefined" )
+					uid = null;
+				
+				if( service == null && uid == null ) {
+					// list all
+				}
+				else {
+					// list single item
+					
+				}
+			}
+		},
+		albums: {
+			hasLoaded: false,
+			load: function(page, service, uid){
+				if( typeof page == "undefined" )
+					page = 0;
+				if( typeof service == "undefined" )
+					service = null;
+				if( typeof uid == "undefined" )
+					uid = null;
+				
+				if( service == null && uid == null ) {
+					// list all
+				}
+				else {
+					// list single item
+					
+				}
+			}
+		},
+		playlists: {
+			hasLoaded: false,
+			load: function(page, service, uid){
+				if( typeof page == "undefined" )
+					page = 0;
+				if( typeof service == "undefined" )
+					service = null;
+				if( typeof uid == "undefined" )
+					uid = null;
+				
+				if( service == null && uid == null ) {
+					// list all
+				}
+				else {
+					// list single item
+					
+				}
+			}
+		},
+		favorites: {
+			hasLoaded: false,
+			load: function(page, service, uid){
+				if( typeof page == "undefined" )
+					page = 0;
+				if( typeof service == "undefined" )
+					service = null;
+				if( typeof uid == "undefined" )
+					uid = null;
+				
+				if( service == null && uid == null ) {
+					// list all
+				}
+				else {
+					// list single item
+					
+				}
+			}
+		}
+	},
+	items: {
+		loadItems: function(parent, page, n){
+			var t = this;
+			$.getJSON("lib/"+page+".php?page="+n, function(data){
+				$.each(data, function(k, v) {
+					$item = $("<div>", {
+								class: "item "+v["service"],
+								"data-provider": v["provider"],
+								"data-url": v["url"],
+								"data-title": v["title"],
+								"data-artist": v["artist"],
+								html: v["output"]
+							});
+					$more = $("<div>", {
+								class: "more"
+							}).appendTo($item);
+					
+					if( v["playable"] ) {
 						$("<img>", {
 							src: "img/play.png",
 							class: "play"
@@ -143,69 +185,105 @@ $(document).ready(function(){
 							$(this).hide().siblings(".play").show();
 							e.stopPropagation();
 						}).appendTo($more);
-						$("<img>", {
-							src: "img/info.png",
-							class: "info"
-						}).click(function(e){
-							$("<div>", { text: "test" }).dialog({ modal: true, dialogClass: "modal", draggable: false, resizable: false, title: "Title" });
-							e.stopPropagation();
-						}).appendTo($more);
+					}
+					
+					$("<img>", {
+						src: "img/info.png",
+						class: "info"
+					}).click(function(e){
+						if( v["artist"] == "" || v["song"] == "" )
+							var tit = v["title"].replace(/\-/g, "_");
+						else
+							var tit = v["artist"]+"_"+v["song"];
+							
+						window.location = "#/tracks/"+urlencode(tit.replace(/ /g, '-').replace(/[!,"'@#$%^&*\(\)\=]/g, ''))+"_"+v["service"]+"_"+v["uid"];
+						e.stopPropagation();
+					}).appendTo($more);
+					$("<img>", {
+						src: "img/heart.png",
+						class: "heart"
+					}).click(function(e){
+						Astrobeats.favorites.add($item);
+						e.stopPropagation();
+					}).appendTo($more);
+					$("<img>", {
+						src: "img/download.png",
+						class: "download"
+					}).click(function(e){
 						
-						$("<div>", {
-							class: "item-shadow"
-						}).appendTo(item);
-						
-						$("#loadhere").append(item);
-					});
-					$("#loadhere")
-					.find(".item")
-					.live({
-						click: function(){
-							if( $(this).hasClass("playing") ) {
-								if( $(".button#pause").is(":visible") )
-									$(".button#pause").trigger("click");
-								else
-									$(".button#play").trigger("click");
-							}
-							else {
-								$(this).siblings(".item.playing").children(".desc").stop().animate({ left: "187px" }, {duration: 700, easing: "easeOutBounce"});
-								$(this).siblings(".item.playing").children(".more").stop().animate({ bottom: "-26px" }, {duration: 800, easing: "easeOutExpo"}).children("img.pause").hide().siblings("img.play").show();
-								$(this).addClass("playing").siblings(".item").removeClass("playing");
-								$("#artist_info #trackinfo").html($(this).attr("data-title"));
-								
-								$(this).children(".desc").stop().animate({ left: "0px" }, {duration: 400, easing: "easeOutExpo"});
-								$(this).children(".more").stop().animate({ bottom: "0px" }, {duration: 500, easing: "easeOutExpo"}).children("img.pause").show().siblings("img.play").hide();
-								
-								if( $(this).attr("data-provider") == "youtube.com" || $(this).attr("data-provider") == "youtu.be" ) {
-									embed("youtube", $(this).attr("data-url"));
-								}
-								else if( $(this).attr("data-provider") == "soundcloud.com" ) {
-									embed("soundcloud", $(this).attr("data-url"));
+						e.stopPropagation();
+					}).appendTo($more);
+					
+					$item.bind({
+						click: function(e){
+							if( v["playable"] ) {
+								if( $(this).hasClass("playing") ) {
+									if( $(".button#pause").is(":visible") )
+										$(".button#pause").trigger("click");
+									else
+										$(".button#play").trigger("click");
 								}
 								else {
-									console.log("Unable to load provider. Provider: "+$(this).attr("data-provider"));
-									$(this).next(".item").trigger("click");
+									$(this).siblings(".item.playing").children(".desc").stop().animate({ left: "187px" }, {duration: 700, easing: "easeOutBounce"});
+									$(this).siblings(".item.playing").children(".more").stop().animate({ bottom: "-26px" }, {duration: 800, easing: "easeOutExpo"}).children("img.pause").hide().siblings("img.play").show();
+									$(this).addClass("playing").siblings(".item").removeClass("playing");
+									
+									$("#artist_info #trackinfo").html('<marquee scrollamount="2" behavior="alternate">'+$(this).attr("data-title")+'</marquee>');
+									
+									$(this).children(".desc").stop().animate({ left: "0px" }, {duration: 400, easing: "easeOutExpo"});
+									$(this).children(".more").stop().animate({ bottom: "0px" }, {duration: 500, easing: "easeOutExpo"}).children("img.pause").show().siblings("img.play").hide();
+									
+									if( $(this).attr("data-provider") == "youtube.com" || $(this).attr("data-provider") == "youtu.be" ) {
+										embed("youtube", $(this).attr("data-url"));
+									}
+									else if( $(this).attr("data-provider") == "soundcloud.com" ) {
+										embed("soundcloud", $(this).attr("data-url"));
+									}
+									else {
+										console.log("Unable to load provider. Provider: "+$(this).attr("data-provider"));
+										window.player.next();
+									}
 								}
 							}
-						}
-					})
-					;
-					$("#loadhere.wall")
-					.find(".item:not(.playing)")
-					.live(
-						{ 
-							mouseenter: function(){
-								$(this).children(".desc").stop().animate({ left: "0px" }, {duration: 400, easing: "easeOutExpo"});
-								$(this).children(".more").stop().animate({ bottom: "0px" }, {duration: 500, easing: "easeOutExpo"});
-							}, 
-							mouseleave: function(){
-								$(this).children(".desc").stop().animate({ left: "187px" }, {duration: 700, easing: "easeOutBounce"});
-								$(this).children(".more").stop().animate({ bottom: "-26px" }, {duration: 800, easing: "easeOutExpo"});
+							else {
+								// Astrobeats.pages.tracks.load(0, v["service"], v["uid"]);
 							}
+							e.stopPropagation();
+						},
+						mouseenter: function(){
+							$(this).children(".desc").stop().animate({ left: "0px" }, {duration: 400, easing: "easeOutExpo"});
+							$(this).children(".more").stop().animate({ bottom: "0px" }, {duration: 500, easing: "easeOutExpo"});
+						}, 
+						mouseleave: function(){
+							$(this).not(".playing").children(".desc").stop().animate({ left: "187px" }, {duration: 700, easing: "easeOutBounce"});
+							$(this).not(".playing").children(".more").stop().animate({ bottom: "-26px" }, {duration: 800, easing: "easeOutExpo"});
 						}
-					);
-				});	
-				break;
+					});
+					parent.append($item);
+				});
+			});
+			// $("#loadhere").children("#"+page).show();
+		},
+		loadItem: function(parent, page, params) {
+			// $("#loadhere").children().hide("slide", { direction: "left" });
+			if( matches.length == 4 )
+				title = matches[0]+" - "+matches[1];
+			else
+				title = matches[0];
+			provider = $(matches).get(-2);
+			uid = $(matches).get(-1);
+			
+			$.getJSON("lib/"+page+".php?a=getItem&service="+service+"&item="+uid, function(data){
+				parent.append(data);
+				$(document).scrollTo(0);
+			});
 		}
+	}
+};
+
+$(document).ready(function(){	
+	$.routes(Astrobeats.routes);
+	if( !$.routes("get") || $.routes("get") == "" ){
+		window.location = "#/tracks";
 	}
 });
