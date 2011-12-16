@@ -1,0 +1,10 @@
+Requirements
+----------
+In order to run this application, a web server with PHP5+ is required.
+To use this application, an up-to-date web browser that supports 
+CSS3 properties and HTML5 features such as Google Chrome 15 is required.
+
+Installation
+------------
+Simply copy the Astrobeats folder to your public htdocs folder and 
+navigate to that folder via your web browser.

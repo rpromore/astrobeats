@@ -1,44 +1,69 @@
 $(document).ready(function(){
+	$("#artist_info").click(function(){
+		if( $("#loadhere").children("#tracks").not(":hidden") ) {
+			$("html:not(:animated),body:not(:animated)").animate({
+				scrollTop: $(".item.playing").offset().top-75
+			}, 500);
+		}
+	}).resizable({ handles: 'e', maxWidth: 350, minWidth: 0 });
+	
 	$("#seekbar").click(function(e){
 		var x = e.offsetX;
-		window.player.seekPercent(x);
+		Astrobeats.player.seekPercent(x);
 	});
 
 	$(".button#info").click(function(){
-		$.address.path("artists/"+$(".item.playing").attr("data-artist").replace(/ /g, '+'));
+		if( !$(this).hasClass("disabled") ) {
+			$.address.path("artists/"+$(".item.playing").attr("data-artist").replace(/ /g, '+'));
+		}
 	});
 	$(".button#eye").click(function(){
-		if( $(this).hasClass("active") ) {
-			$("#coverart").animate({ bottom: -258 }, "easeInQuart");
-			$(this).removeClass("active");
-			$(this).find("img").attr("src", "img/musicplayer/eye.png");
-		}
-		else {
-			$("#coverart").animate({ bottom: 60 }, "easeOutQuart");
-			$(this).addClass("active");
-			$(this).find("img").attr("src", "img/musicplayer/eye-active2.png");
+		if( !$(this).hasClass("disabled") ) {
+			if( $(this).hasClass("active") ) {
+				$("#coverart").animate({ bottom: -258 }, "easeInQuart").children("#player").css("z-index", 900);
+				$(this).removeClass("active");
+				$(this).find("img").attr("src", "img/musicplayer/eye.png");
+			}
+			else {
+				$("#coverart").animate({ bottom: 60 }, "easeOutQuart").children("#player").css("z-index", -1);
+				$(this).addClass("active");
+				$(this).find("img").attr("src", "img/musicplayer/eye-active.png");
+			}
 		}
 	});
 	$(".button#play").click(function(){
-		window.player.play();
+		if( !$(this).hasClass("disabled") ) {
+			Astrobeats.player.play();
+		}
 	});
 	$(".button#pause").click(function(){
-		window.player.pause();
+		if( !$(this).hasClass("disabled") ) {
+			Astrobeats.player.pause();
+		}
 	});
 	$(".button#prev").click(function(){
-		$(".item.playing").prev(".item").trigger("click");
+		if( !$(this).hasClass("disabled") ) {
+			Astrobeats.player.prev();
+		}
 	});
 	$(".button#next").click(function(){
-		$(".item.playing").next(".item").trigger("click");
+		if( !$(this).hasClass("disabled") ) {
+			Astrobeats.player.next();
+		}
 	});
 	$(".button#heart").click(function(){
-		if( $(this).is(".active") ) {
-			$(this).removeClass("active").find("img").attr("src", "img/musicplayer/heart.png");
-			// todo add to favorites
-		}
-		else {
-			$(this).addClass("active").find("img").attr("src", "img/musicplayer/heart-active.png");
-			
+		if( !$(this).hasClass("disabled") ) {
+			if( $(this).is(".active") ) {
+				$(this).removeClass("active").find("img").attr("src", "img/musicplayer/heart.png");
+				// remove
+				Astrobeats.favorites.remove(Astrobeats.pages.currentPage, $(".item.playing").clone());
+			}
+			else {
+				$(this).addClass("active").find("img").attr("src", "img/musicplayer/heart-active.png");
+				// add
+				Astrobeats.favorites.add(Astrobeats.pages.currentPage, $(".item.playing").clone());
+			}
+			console.log(Astrobeats.favorites);
 		}
 	});
 	$(".button#download").click(function(){
@@ -61,32 +86,32 @@ $(document).ready(function(){
 		max: 100,
 		value: 100,
 		change: function(evt, ui){
-			window.player.setVolume(ui.value);
+			Astrobeats.player.setVolume(ui.value);
 		},
 		slide: function(evt, ui){
-			window.player.setVolume(ui.value);
+			Astrobeats.player.setVolume(ui.value);
 		}
 	});
 	
 	$(".button#shuffle").click(function(){
 		if( $(this).is(".active") ) {
 			$(this).removeClass("active").find("img").attr("src", "img/musicplayer/shuffle.png");
-			window.player.options.shuffle = false;
+			Astrobeats.player.options.shuffle = false;
 		}
 		else {
 			$(this).addClass("active").find("img").attr("src", "img/musicplayer/shuffle-active.png");
-			window.player.options.shuffle = true;
+			Astrobeats.player.options.shuffle = true;
 		}
 	});
 	
 	$(".button#repeat").click(function(){
 		if( $(this).is(".active") ) {
 			$(this).removeClass("active").find("img").attr("src", "img/musicplayer/repeat.png");
-			window.player.options.repeat = false;
+			Astrobeats.player.options.repeat = false;
 		}
 		else {
 			$(this).addClass("active").find("img").attr("src", "img/musicplayer/repeat-active.png");
-			window.player.options.repeat = true;
+			Astrobeats.player.options.repeat = true;
 		}
 	});
 });

@@ -31,54 +31,83 @@ Astrobeats.player = {
 		continuous: true,
 		repeat: false,
 		autoplay: true,
-		view_type: "wall"
+		view_type: "wall",
+		keys: {
+			next: 78,
+			prev: 80,
+			toggle: 32,
+			video: 86,
+			info: 73,
+			volumeUp: 88,
+			volumeDown: 90
+		}
 	},
 	played_list: [],
+	status: "paused",
 	next: function(){
 		if( Astrobeats.player.handler != null && Astrobeats.player.type != null ) {
-			console.log("repeat");
 			if( Astrobeats.player.options.repeat ) {
+				Astrobeats.player.pause();
 				Astrobeats.player.seek(0);
 				Astrobeats.player.play();
 			}
 			else if( Astrobeats.player.options.shuffle ) {
-				var r = Math.floor(Math.random()*jQuery(".item").length);
-				while( jQuery(".item").eq(r).is(":hidden") ) {
-					console.log("hidden");
-					r = Math.floor(Math.random()*jQuery(".item").length);
+				if( Astrobeats.player.played_list.length <= jQuery("#loadhere").children("#tracks").children("div").size() ) {
+					hide = false;
+					if( $("#loadhere").children("#tracks").is(":hidden") ) {
+						hide = true;
+						$("#loadhere").children("#tracks").css({ left: "-1000px", right: "1000px" }).show();
+					}
+					var r = Math.floor(Math.random()*jQuery(".item").length);
+					var exists = jQuery.inArray(jQuery(".item").eq(r).attr("data-url"), Astrobeats.player.played_list);
+					
+					console.log(exists);
+					
+					while( jQuery(".item").eq(r).is(":hidden") || exists >= 0 ) {
+						r = Math.floor(Math.random()*jQuery(".item").length);
+						exists = jQuery.inArray(jQuery(".item").eq(r).attr("data-url"), Astrobeats.player.played_list);
+					}
+					var $r = jQuery(".item").eq(r);
+					
+					$("html:not(:animated), body:not(:animated)").animate({
+						scrollTop: $r.offset().top-75
+					}, 500);
+					$r.trigger("click");
+					if( hide )
+						$("#loadhere").children("#tracks").css({ left: 0, right: 0 }).hide();
 				}
-				var $r = jQuery(".item").eq(r);
-				
-				$("html:not(:animated), body:not(:animated)").animate({
-					scrollTop: $r.offset().top-75
-				}, 500);
-				$r.trigger("click");
+				else console.log("Nothing more to play.");
 			}
 			else {
-				var $next = jQuery(".item.playing").next(".item");
-				while( $next.is(":hidden") )
-					$next = $next.next(".item");
-				$next.trigger("click");
+				if( Astrobeats.player.played_list.length <= jQuery("#loadhere").children("#tracks").children("div").size() ) {
+					hide = false;
+					if( $("#loadhere").children("#tracks").is(":hidden") ) {
+						hide = true;
+						$("#loadhere").children("#tracks").css({ left: "-1000px", right: "1000px" }).show();
+					}
+					var $next = jQuery(".item.playing").next(".item");
+					while( $next.is(":hidden") )
+						$next = $next.next(".item");
+					$next.trigger("click");
+					if( hide )
+						$("#loadhere").children("#tracks").css({ left: 0, right: 0 }).hide();
+				}
+				else console.log("Nothing more to play.");
 			}
 		}
 	},
 	prev: function(){
 		if( Astrobeats.player.handler != null && Astrobeats.player.type != null ) {
-			/*
-			if( Astrobeats.player.getTimeElapsed() < 10 ) {
-				Astrobeats.player.stop();
-				$r = $(Astrobeats.player.played_list.pop());
-				$r.trigger("click").trigger("click");
-			}
-			else {
-			*/
+			if( Astrobeats.player.options.shuffle ) {
 				Astrobeats.player.played_list.pop();
-				$r = $(Astrobeats.player.played_list.pop())
+				$r = $(".item[data-url="+Astrobeats.player.played_list.pop()+"]");
 				$r.trigger("click");
-			// }
-			$("html:not(:animated),body:not(:animated)").animate({
-				scrollTop: $r.offset().top-75
-			}, 500);
+				$("html:not(:animated),body:not(:animated)").animate({
+					scrollTop: $r.offset().top-75
+				}, 500);
+			}
+			else
+				$(".item.playing").prev(".item").trigger("click");
 		}
 	},
 	play: function(){
@@ -87,10 +116,15 @@ Astrobeats.player = {
 			jQuery(".button#play").hide();
 			jQuery(".button#pause").show();
 			jQuery(".playing").find(".more").find(".pause").show().siblings(".play").hide();
+			// $("#musicbar #controls").children("#info").removeClass("disabled").find("img").attr("src", "img/musicplayer/info.png");
+			$("#musicbar #controls").children("#heart").removeClass("disabled").find("img").attr("src", "img/musicplayer/heart.png");
+			$("#musicbar #controls").children("#eye").removeClass("disabled").find("img").attr("src", "img/musicplayer/eye.png");
+			$("#musicbar #controls").children("#prev").removeClass("disabled").find("img").attr("src", "img/musicplayer/prev.png");
+			$("#musicbar #controls").children("#next").removeClass("disabled").find("img").attr("src", "img/musicplayer/next.png");
 			
 			if( $(Astrobeats.player.played_list).get(-1) != $(".item.playing") ) {
 				// when repeat is on and we're not repeating a song
-				Astrobeats.player.played_list.push(jQuery(".item.playing"));
+				Astrobeats.player.played_list.push(jQuery(".item.playing").attr("data-url"));
 			
 				Astrobeats.player.timer = setInterval(function(){
 					var x = (Astrobeats.player.getTimeElapsed()/Astrobeats.player.getDuration())*jQuery("#seekbar").width();
@@ -112,6 +146,7 @@ Astrobeats.player = {
 				}, 1000);
 			
 			}
+			status = "playing";
 			// Player
 			if( Astrobeats.player.type == "youtube" ) {
 				Astrobeats.player.handler.playVideo();
@@ -130,6 +165,8 @@ Astrobeats.player = {
 		jQuery(".button#play").show();
 		jQuery(".button#pause").hide();
 		jQuery(".playing").find(".more").find(".pause").hide().siblings(".play").show();
+		
+		status = "paused";
 		
 		// Player
 		if( Astrobeats.player.handler != null && Astrobeats.player.type != null ) {
@@ -329,5 +366,40 @@ function embed(type, url) {
 			swfobject.embedSWF("http://player.soundcloud.com/player.swf", "player", "425", "80", "9.0.0","expressInstall.swf", Astrobeats.player.flashvars, Astrobeats.player.parameters, Astrobeats.player.attributes);
 			jQuery("#player, #coverart").height(80);
 			break;
+		case "beatport":
+			Astrobeats.player.url = url;
+			Astrobeats.player.type = "jplayer";
+			$("#player").jPlayer();
 	}
 }
+
+$(document).keydown(function(e){
+	if( $("input[type=text]:focus").length <= 0 ) {
+		var k = (e.keyCode ? e.keyCode : e.which);
+		var r = true;
+		$.each(Astrobeats.player.options.keys, function(key, v) {
+			if( v == k ) {
+				switch(key) {
+					case "next":
+						Astrobeats.player.next();
+						break;
+					case "prev":
+						Astrobeats.player.prev();
+						break;
+					case "toggle":
+						status == "playing" ? Astrobeats.player.pause() : Astrobeats.player.play();
+						break;
+					case "volumeUp":
+						Astrobeats.player.setVolume(Astrobeats.player.getVolume()+1);
+						break;
+					case "volumeDown":
+						Astrobeats.player.setVolume(Astrobeats.player.getVolume()-1);
+						break;
+				}
+				r = false;
+			}
+		});
+		e.stopPropagation();
+		return r;
+	}
+});

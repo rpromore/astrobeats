@@ -19,263 +19,342 @@ var Astrobeats = {
 	routes: {
 		'/tracks': function(){
 			Astrobeats.pages.tracks.load();
+			$.get("lib/tracks.php?page=filters", function(data){
+				$("#filters-tracks").html(data);
+			});
+			places_highlight("tracks");
 		},
-		'/tracks/*': function(t){
-			matches = urldecode(t.path).replace(/\+/g, ' ').split("_");			
-			Astrobeats.pages.tracks.load(0, matches);
+		'/search': function(){
+			$("input#search").focus();
+		},
+		'/search/*': function(t){
+			params = { type: "search", search: t.path };
+			Astrobeats.pages.tracks.load(params);
+			places_highlight("search");
+		},
+		'/events': function(){
+			Astrobeats.pages.events.load();
+			places_highlight("events");
+		},
+		'/events/*': function(t){
+			var parts = t.path.split('_');
+			var service = $(parts).get(-2);
+			var uid = $(parts).get(-1);
+			Astrobeats.items.loadItem($("#loadhere #events-info"), { cat: "events", page: "getItem", uid: uid });
+		},
+		'/favorites': function(){
+			Astrobeats.pages.favorites.load();
+			places_highlight("favorites");
+		},
+		'/options': function(){
+			Astrobeats.pages.options.load();
+			places_highlight("options");
 		}
 	},
-	queue: [],
 	pages: {
-		tracks: {
+		currentPage: "tracks",
+		options: {
 			hasLoaded: false,
-			load: function(page, params){
-				if( typeof page == "undefined" )
-					page = 0;
-				if( typeof service == "undefined" )
-					service = null;
-				if( typeof uid == "undefined" )
-					uid = null;
-					
-				// $("div#loadhere div#tracks").show().css("top", "0px"); 
-				
-				if( params == null ) {
-					// list all
-					$("#loadhere").children("#tracks").show().css({ left: 0, right: 0, overflow: "hidden" }).siblings().hide();
-					if( !this.hasLoaded ) {
-						var i = 0;
-						
-						console.log($(window).height());
-						console.log($(document).height());
-						
-						var t = setInterval(function(){
-							if( $(document).height() <= $(window).height() )
-								Astrobeats.items.loadItems($("div#loadhere div#tracks"), "tracks", i++);
-							else
-								clearInterval(t);
-						}, 1000);
-						
-						Astrobeats.items.loadItems($("div#loadhere div#tracks"), "tracks", i++);
-						if( Astrobeats.options.scrollLoad ) {
-							$(document).scroll(function(e){
-								if( $(window).scrollTop() >= $(document).height() - $(window).height() - Astrobeats.options.scrollLoadOffset ) {
-									Astrobeats.items.loadItems($("div#loadhere div#tracks"), "tracks", i++);
-								}
-							});
-						}
-						this.hasLoaded = true;
-					}
-				}
-				else {
-					// list single item					
-					$("#loadhere").children("#tracks-info").show().siblings().hide();
-					$("#loadhere").children("#tracks").show().css({ left: "-1000%", right: "1000%" });
-					Astrobeats.items.loadItem($("div#loadhere div#tracks-info"), "tracks", params);
-				}
-			}
-		},
-		artists: {
-			hasLoaded: false,
-			load: function(page, service, uid){
-				if( typeof page == "undefined" )
-					page = 0;
-				if( typeof service == "undefined" )
-					service = null;
-				if( typeof uid == "undefined" )
-					uid = null;
-				
-				if( service == null && uid == null ) {
-					// list all
-				}
-				else {
-					// list single item
-					
-				}
-			}
-		},
-		albums: {
-			hasLoaded: false,
-			load: function(page, service, uid){
-				if( typeof page == "undefined" )
-					page = 0;
-				if( typeof service == "undefined" )
-					service = null;
-				if( typeof uid == "undefined" )
-					uid = null;
-				
-				if( service == null && uid == null ) {
-					// list all
-				}
-				else {
-					// list single item
-					
-				}
-			}
-		},
-		playlists: {
-			hasLoaded: false,
-			load: function(page, service, uid){
-				if( typeof page == "undefined" )
-					page = 0;
-				if( typeof service == "undefined" )
-					service = null;
-				if( typeof uid == "undefined" )
-					uid = null;
-				
-				if( service == null && uid == null ) {
-					// list all
-				}
-				else {
-					// list single item
-					
+			load: function(params){
+				$("#loadhere").children("#options").show().siblings().hide();
+				if( !this.hasLoaded ) {
+					$("#options #scrollload").change(function(){
+						if( this.checked )
+							Astrobeats.options.scrollLoad = true;
+						else
+							Astrobeats.options.scrollLoad = false;
+					});
+					$("#options #scrollload-offset").change(function(){
+						Astrobeats.options.scrollOffset = $(this).val();
+					});
+					$("#options #shuffling").change(function(){
+						$(".button#shuffle").trigger("click");
+					});
+					$("#options #repeat").change(function(){
+						$(".button#repeat").trigger("click");
+					});
+					$("#options #continuous").change(function(){
+						if( this.checked )
+							Astrobeats.player.options.continous = true;
+						else
+							Astrobeats.player.options.continuous = false;
+					});
+					$("#options #autoplay").change(function(){
+						if( this.checked )
+							Astrobeats.player.options.autoplay = true;
+						else
+							Astrobeats.player.options.autoplay = false;
+					});
+					this.hasLoaded = true;
+					Astrobeats.pages.currentPage = "options";
 				}
 			}
 		},
 		favorites: {
 			hasLoaded: false,
-			load: function(page, service, uid){
-				if( typeof page == "undefined" )
-					page = 0;
-				if( typeof service == "undefined" )
-					service = null;
-				if( typeof uid == "undefined" )
-					uid = null;
-				
-				if( service == null && uid == null ) {
-					// list all
+			load: function(params){
+				$("#loadhere").children("#favorites").html("").show().siblings().hide();
+				$("#filters-favorites").html("No filtering options available.").show().siblings().hide();
+				$.each(Astrobeats.favorites.favs, function(k, v){
+					$.each(v, function(j, w){
+						$("#loadhere").children("#favorites").append(Astrobeats.items.createItem(w));
+					});
+				});
+				Astrobeats.pages.currentPage = "favorites";
+			}
+		},
+		tracks: {
+			hasLoaded: false,
+			load: function(params){
+				if( typeof params == "undefined" )
+					params = null;
+					
+				if( params != null && params["type"] == "search" ) {
+					var s = params["search"];
+					var i = 0;
+					Astrobeats.items.loadItems($("div#loadhere div#search"), { cat: "tracks", page: "search", pagenumber: i++, q: s });
+					var t = setInterval(function(){
+						if( $(document).height() <= $(window).height() )
+							Astrobeats.items.loadItems($("div#loadhere div#search"), { cat: "tracks", page: "search", pagenumber: i++, q: s });
+						else if( $(document).height() > $(window).height() )
+							clearInterval(t);
+							
+						if( i >= 5 )
+							clearInterval(t);
+					}, 1000);
 				}
 				else {
-					// list single item
+					if( !this.hasLoaded ) {
+						var i = 0;
+						
+						Astrobeats.items.loadItems($("div#loadhere div#tracks"), { cat: "tracks", pagenumber: i++ });
+						var t = setInterval(function(){
+							if( $(document).height() <= $(window).height() )
+								Astrobeats.items.loadItems($("div#loadhere div#tracks"), { cat: "tracks", pagenumber: i++ });
+							else if( $(document).height() > $(window).height() )
+								clearInterval(t);
+								
+							if( i >= 5 )
+								clearInterval(t);
+						}, 1000);
+						
+						if( Astrobeats.options.scrollLoad ) {
+							$(document).scroll(function(e){
+								if( $(window).scrollTop() >= $(document).height() - $(window).height() - Astrobeats.options.scrollLoadOffset ) {
+									Astrobeats.items.loadItems($("div#loadhere div#tracks"), { cat: "tracks", pagenumber: i++ });
+								}
+							});
+						}
+						this.hasLoaded = true;
+					}
+					$("#loadhere").children("#tracks").show().siblings().hide();
+					Astrobeats.pages.currentPage = "tracks";
+				}
+			}
+		},
+		events: {
+			hasLoaded: false,
+			load: function(params){
+				$.get("lib/events.php?page=getFilters", function(data){
+					var d = $(data);
+					$("#filters-events").html(data);
+				});
+				
+				if( typeof params == "undefined" )
+					params = null;
 					
+				if( params != null && params["type"] == "search" ) {
+					var s = params["search"];
+					var i = 0;
+					Astrobeats.items.loadItems($("div#loadhere div#search"), { cat: "events", page: "search", pagenumber: i++, q: s });
+					var t = setInterval(function(){
+						if( $(document).height() <= $(window).height() )
+							Astrobeats.items.loadItems($("div#loadhere div#search"), { cat: "events", page: "search", pagenumber: i++, q: s });
+						else if( $(document).height() > $(window).height() )
+							clearInterval(t);
+							
+						if( i >= 5 )
+							clearInterval(t);
+							
+						console.log("timer active");
+					}, 1000);
+				}
+				else {
+					if( !this.hasLoaded ) {
+						var i = 0;
+						
+						Astrobeats.items.loadItems($("div#loadhere div#events"), { cat: "events", pagenumber: i++ });
+						var t = setInterval(function(){
+							if( $(document).height() <= $(window).height() )
+								Astrobeats.items.loadItems($("div#loadhere div#events"), { cat: "events", pagenumber: i++ });
+							else if( $(document).height() > $(window).height() )
+								clearInterval(t);
+								
+							if( i >= 5 )
+								clearInterval(t);
+								
+							console.log("timer active");
+						}, 1000);
+						// wait 2 seconds before seeing if there are enough results
+						
+						if( Astrobeats.options.scrollLoad ) {
+							$(document).scroll(function(e){
+								if( $(window).scrollTop() >= $(document).height() - $(window).height() - Astrobeats.options.scrollLoadOffset ) {
+									Astrobeats.items.loadItems($("div#loadhere div#events"), { cat: "events", pagenumber: i++ });
+								}
+							});
+						}
+						this.hasLoaded = true;
+					}
+					$("#loadhere").children("#events").show().siblings().hide();
+					Astrobeats.pages.currentPage = "events";
 				}
 			}
 		}
 	},
 	items: {
-		loadItems: function(parent, page, n){
-			var t = this;
-			$.getJSON("lib/"+page+".php?page="+n, function(data){
-				$.each(data, function(k, v) {
-					$item = $("<div>", {
-								class: "item "+v["service"],
-								"data-provider": v["provider"],
-								"data-url": v["url"],
-								"data-title": v["title"],
-								"data-artist": v["artist"],
-								html: v["output"]
-							});
-					$more = $("<div>", {
-								class: "more"
-							}).appendTo($item);
-					
-					if( v["playable"] ) {
-						$("<img>", {
-							src: "img/play.png",
-							class: "play"
-						}).click(function(e){
-							$(this).parents(".item").trigger("click");
-							$(this).hide().siblings(".pause").show();
-							e.stopPropagation();
-						}).appendTo($more);
-						$("<img>", {
-							src: "img/pause.png",
-							class: "pause"
-						}).click(function(e){
-							$(".button#pause").trigger("click");
-							$(this).hide().siblings(".play").show();
-							e.stopPropagation();
-						}).appendTo($more);
+		createItem: function(options) {
+			$item = $("<div>", options)
+			.bind({
+				click: function(e){
+					/*
+					if( $.inArray($(this), Astrobeats.favorites.tracks) > 0 ) {
+						$(".button#heart").find("img").attr("src", "img/musicplayer/heart-active.png");
+						addFavorite(Astrobeats.pages.currentPage, $(this).clone(true));
+						save();
 					}
-					
-					$("<img>", {
-						src: "img/info.png",
-						class: "info"
-					}).click(function(e){
-						if( v["artist"] == "" || v["song"] == "" )
-							var tit = v["title"].replace(/\-/g, "_");
-						else
-							var tit = v["artist"]+"_"+v["song"];
+					else {
+						$(".button#heart").find("img").attr("src", "img/musicplayer/heart.png");
+						// Astrobeats.favorites.remove(Astrobeats.pages.currentPage, $(this).clone(true));
+					}
+					*/
+					if( options["data-playable"] ) {
+						if( $(this).hasClass("playing") ) {
+							if( $(".button#pause").is(":visible") )
+								$(".button#pause").trigger("click");
+							else
+								$(".button#play").trigger("click");
+						}
+						else {
+							$(this).siblings(".item.playing").children(".desc").stop().animate({ left: "187px" }, {duration: 700, easing: "easeOutBounce"});
+							$(this).siblings(".item.playing").children(".more").stop().animate({ bottom: "-26px" }, {duration: 800, easing: "easeOutExpo"}).children("img.pause").hide().siblings("img.play").show();
+							$(this).addClass("playing").siblings(".item").removeClass("playing");
 							
-						window.location = "#/tracks/"+urlencode(tit.replace(/ /g, '-').replace(/[!,"'@#$%^&*\(\)\=]/g, ''))+"_"+v["service"]+"_"+v["uid"];
-						e.stopPropagation();
-					}).appendTo($more);
-					$("<img>", {
-						src: "img/heart.png",
-						class: "heart"
-					}).click(function(e){
-						Astrobeats.favorites.add($item);
-						e.stopPropagation();
-					}).appendTo($more);
-					$("<img>", {
-						src: "img/download.png",
-						class: "download"
-					}).click(function(e){
-						
-						e.stopPropagation();
-					}).appendTo($more);
-					
-					$item.bind({
-						click: function(e){
-							if( v["playable"] ) {
-								if( $(this).hasClass("playing") ) {
-									if( $(".button#pause").is(":visible") )
-										$(".button#pause").trigger("click");
-									else
-										$(".button#play").trigger("click");
-								}
-								else {
-									$(this).siblings(".item.playing").children(".desc").stop().animate({ left: "187px" }, {duration: 700, easing: "easeOutBounce"});
-									$(this).siblings(".item.playing").children(".more").stop().animate({ bottom: "-26px" }, {duration: 800, easing: "easeOutExpo"}).children("img.pause").hide().siblings("img.play").show();
-									$(this).addClass("playing").siblings(".item").removeClass("playing");
-									
-									$("#artist_info #trackinfo").html('<marquee scrollamount="2" behavior="alternate">'+$(this).attr("data-title")+'</marquee>');
-									
-									$(this).children(".desc").stop().animate({ left: "0px" }, {duration: 400, easing: "easeOutExpo"});
-									$(this).children(".more").stop().animate({ bottom: "0px" }, {duration: 500, easing: "easeOutExpo"}).children("img.pause").show().siblings("img.play").hide();
-									
-									if( $(this).attr("data-provider") == "youtube.com" || $(this).attr("data-provider") == "youtu.be" ) {
-										embed("youtube", $(this).attr("data-url"));
-									}
-									else if( $(this).attr("data-provider") == "soundcloud.com" ) {
-										embed("soundcloud", $(this).attr("data-url"));
-									}
-									else {
-										console.log("Unable to load provider. Provider: "+$(this).attr("data-provider"));
-										window.player.next();
-									}
-								}
+							$("#artist_info #trackinfo").html('<marquee scrollamount="2" behavior="alternate">'+$(this).attr("data-title")+'</marquee>');
+							
+							$(this).children(".desc").stop().animate({ left: "0px" }, {duration: 400, easing: "easeOutExpo"});
+							$(this).children(".more").stop().animate({ bottom: "0px" }, {duration: 500, easing: "easeOutExpo"}).children("img.pause").show().siblings("img.play").hide();
+							
+							if( $(this).attr("data-provider") == "youtube.com" || $(this).attr("data-provider") == "youtu.be" ) {
+								embed("youtube", $(this).attr("data-url"));
+							}
+							else if( $(this).attr("data-provider") == "soundcloud.com" ) {
+								embed("soundcloud", $(this).attr("data-url"));
 							}
 							else {
-								// Astrobeats.pages.tracks.load(0, v["service"], v["uid"]);
+								console.log("Unable to load provider. Provider: "+$(this).attr("data-provider"));
+								Astrbeats.player.next();
 							}
-							e.stopPropagation();
-						},
-						mouseenter: function(){
-							$(this).children(".desc").stop().animate({ left: "0px" }, {duration: 400, easing: "easeOutExpo"});
-							$(this).children(".more").stop().animate({ bottom: "0px" }, {duration: 500, easing: "easeOutExpo"});
-						}, 
-						mouseleave: function(){
-							$(this).not(".playing").children(".desc").stop().animate({ left: "187px" }, {duration: 700, easing: "easeOutBounce"});
-							$(this).not(".playing").children(".more").stop().animate({ bottom: "-26px" }, {duration: 800, easing: "easeOutExpo"});
 						}
-					});
-					parent.append($item);
-				});
+					}
+					else if( options["data-info"] )
+						$(this).find(".info").trigger("click");
+					e.stopPropagation();
+				},
+				mouseenter: function(){
+					$(this).children(".desc").stop().animate({ left: "0px" }, {duration: 400, easing: "easeOutExpo"});
+					$(this).children(".more").stop().animate({ bottom: "0px" }, {duration: 500, easing: "easeOutExpo"});
+				}, 
+				mouseleave: function(){
+					$(this).not(".playing").children(".desc").stop().animate({ left: "187px" }, {duration: 700, easing: "easeOutBounce"});
+					$(this).not(".playing").children(".more").stop().animate({ bottom: "-26px" }, {duration: 800, easing: "easeOutExpo"});
+				}
 			});
-			// $("#loadhere").children("#"+page).show();
-		},
-		loadItem: function(parent, page, params) {
-			// $("#loadhere").children().hide("slide", { direction: "left" });
-			if( matches.length == 4 )
-				title = matches[0]+" - "+matches[1];
-			else
-				title = matches[0];
-			provider = $(matches).get(-2);
-			uid = $(matches).get(-1);
+	
+			$more = $("<div>", {
+						class: "more"
+					}).appendTo($item);
 			
-			$.getJSON("lib/"+page+".php?a=getItem&service="+service+"&item="+uid, function(data){
-				parent.append(data);
-				$(document).scrollTo(0);
+			if( options["data-playable"] ) {
+				$("<img>", {
+					src: "img/play.png",
+					class: "play"
+				}).click(function(e){
+					$(this).parents(".item").trigger("click");
+					$(this).hide().siblings(".pause").show();
+					e.stopPropagation();
+				}).appendTo($more);
+				$("<img>", {
+					src: "img/pause.png",
+					class: "pause"
+				}).click(function(e){
+					$(".button#pause").trigger("click");
+					$(this).hide().siblings(".play").show();
+					e.stopPropagation();
+				}).appendTo($more);
+				$("#musicbar").find("#play").removeClass("disabled").find("img").attr("src", "img/musicplayer/play.png");
+			}
+			if( options["data-info"] ) {
+				$("<img>", {
+					src: "img/info.png",
+					class: "info"
+				}).click(function(e){					
+					tit = options["data-title"];	
+					window.location = "#/events/"+urlencode(tit.replace(/ /g, '-').replace(/[!,"'@#$%^&*\(\)\=]/g, ''))+"_"+options["data-service"]+"_"+options["data-uid"];
+					e.stopPropagation();
+				}).appendTo($more);
+			}
+			if( options["data-download"] ) {
+				$("<img>", {
+					src: "img/download.png",
+					class: "download"
+				}).click(function(e){
+					
+					e.stopPropagation();
+				}).appendTo($more);
+			}
+			
+			$("<img>", {
+				src: "img/heart.png",
+				class: "heart"
+			}).click(function(e){
+				if( $.inArray($(this).parents(".item"), Astrobeats.favorites.tracks) < 0 ) {
+					if( $(this).parents(".item").is(".playing") )
+						$(".button#heart").find("img").attr("src", "img/musicplayer/heart-active.png");
+					Astrobeats.favorites.add(Astrobeats.pages.currentPage, options);
+				}
+				else {
+					if( $(this).parents(".item").is(".playing") )
+						$(".button#heart").find("img").attr("src", "img/musicplayer/heart.png");
+					//(Astrobeats.pages.currentPage, $(this).parents(".item").clone(true).trigger("mouseleave"));
+				}
+				e.stopPropagation();
+			}).appendTo($more);
+			return $item;
+		},
+		loadItems: function(parent, params){
+			$.getJSON("lib/"+params["cat"]+".php", params, function(data){
+				$.each(data, function(k, v) {
+					var options = {
+						class: "item "+v["service"],
+						"data-provider": v["provider"],
+						"data-url": v["url"],
+						"data-title": v["title"],
+						"data-artist": v["artist"],
+						"data-playable": v["playable"],
+						"data-info": v["info"],
+						"data-uid": v["uid"],
+						"data-service": v["service"],
+						html: v["output"]
+					};
+					parent.append(Astrobeats.items.createItem(options));
+				});
+				parent.show().siblings().hide();
+			});
+		},
+		loadItem: function(parent, params) {
+			$.get("lib/"+params["cat"]+".php", params, function(data){
+				parent.html(data).show().siblings().hide();
 			});
 		}
 	}
